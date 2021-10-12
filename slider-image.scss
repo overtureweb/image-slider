@@ -13,6 +13,7 @@ image-slider {
 	overflow: hidden;
 	margin: 0 auto;
 	flex-direction: column;
+	touch-action: none;
 
 	:hover {
 		cursor: grab;
