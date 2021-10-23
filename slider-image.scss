@@ -1,12 +1,4 @@
-:root {
-	font-family: system-ui;
-}
-
-body {
-	margin: 0;
-}
-
-image-slider {
+.slider {
 	display: flex;
 	justify-content: center;
 	max-width: 720px;
@@ -18,10 +10,8 @@ image-slider {
 	:hover {
 		cursor: grab;
 	}
-}
 
-.slider {
-	&__wrapper {
+	&__slides {
 		display: flex;
 		justify-content: center;
 
@@ -31,7 +21,7 @@ image-slider {
 	}
 
 	&__slide {
-		flex: 0 0 33%;
+		flex: 0 0 25%;
 		display: flex;
 		flex-direction: column;
 		padding: 0 0.25rem;

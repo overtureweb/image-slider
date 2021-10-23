@@ -1,12 +1,4 @@
-:root {
-  font-family: system-ui;
-}
-
-body {
-  margin: 0;
-}
-
-image-slider {
+.slider {
   display: flex;
   justify-content: center;
   max-width: 720px;
@@ -15,19 +7,18 @@ image-slider {
   flex-direction: column;
   touch-action: none;
 }
-image-slider :hover {
+.slider :hover {
   cursor: grab;
 }
-
-.slider__wrapper {
+.slider__slides {
   display: flex;
   justify-content: center;
 }
-.slider__wrapper.slide-image {
+.slider__slides.slide-image {
   transition: transform 0.5s ease;
 }
 .slider__slide {
-  flex: 0 0 33%;
+  flex: 0 0 25%;
   display: flex;
   flex-direction: column;
   padding: 0 0.25rem;

@@ -1,3 +1,5 @@
+// todo setup src, dist files and build tools
+
 class Slider extends HTMLElement {
 	// slider wrapper for the image slides
 	slider: HTMLDivElement;
@@ -12,33 +14,53 @@ class Slider extends HTMLElement {
 	imageOrder: number[]
 
 	// is slider moving left?
-	isLeft: boolean;
+	isLeft: boolean = true;
 
 	// is this a pointer event?
-	isScrolling: boolean;
+	isScrolling: boolean = false;
 
 	// stores the current X position of a pointer event
-	start: number;
+	start: number = 0;
 
 	// cumulative amount scrolled since the start of the pointer event
-	scrolled: number;
+	scrolled: number = 0;
 
 	// the actual image width set by the CSS flex property
 	slideWidth: number;
 
+	DOM: ShadowRoot | HTMLElement;
+
+	settings: { maxWidth?: string }; // there will be other settings
+
 	constructor() {
 		super();
-		this.slider = this.querySelector(".slider__wrapper") as HTMLDivElement;
-		this.sliderControls = this.querySelector(".slider__controls") as HTMLDivElement;
+		let defaults = {maxWidth: "100%"};
+		this.settings = {...defaults, ...this.dataset};
+
+		// comment out the next line to use the DOM vs Shadow DOM (dev vs prod)
+		// this.attachShadow({mode: "open"});
+		this.DOM = this.shadowRoot || this;
+		if (this.shadowRoot) {
+			this.DOM.innerHTML = this.addHTML();
+			this.addStyleSheet();
+		}
+		this.slider = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
+		this.sliderControls = this.DOM.querySelector(".slider__controls") as HTMLDivElement;
 		this.slides = this.slider.querySelectorAll(".slider__slide")!;
 		this.imageOrder = [];
-		this.isLeft = true;
-		this.isScrolling = false;
-		this.start = 0;
-		this.scrolled = 0;
 		this.slideWidth = this.slides[0].getBoundingClientRect().width;
 		this.setEvents();
 		this.setInitImageOrder(this.slides);
+	}
+
+	addHTML() {
+		return `<div class="slider"><div class="slider__slides"><div class="slider__slide"><img src="https://cdn.shopify.com/s/files/1/0057/3728/3618/products/9b150b8274a605cf6ebd5cf0e071622a_522a91de-c7ed-4773-940b-a75b4e719ff0_350x.jpg?v=1573653815" width="350" height="520" alt="Star Wars Episode I The Phantom Menace"></div><div class="slider__slide"><img src="https://m.media-amazon.com/images/I/61zAkpvYLqL._AC_SY741_.jpg" width="488" height="741" alt="Star Wars Episode II: Attack of the Clones"></div><div class="slider__slide"><img src="https://m.media-amazon.com/images/I/61jCCwfO6HL._AC_SL1000_.jpg" width="666" height="1000" alt="Star Wars Episode III: Revenge of the Sith"></div><div class="slider__slide"><img src="https://m.media-amazon.com/images/I/A1wnJQFI82L._AC_SY879_.jpg" width="563" height="879" alt="Star Wars Episode IV: A New Hope"></div><div class="slider__slide"><img src="https://cdn.shopify.com/s/files/1/1523/1900/products/il_570xN.1577839917_stum.jpg?v=1571496990" width="570" height="879" alt="Star Wars Episode V: The Empire Strikes Back"></div><div class="slider__slide"><img src="https://m.media-amazon.com/images/I/512x-5tuQLL._AC_.jpg" width="339" height="500" alt="Star Wars Episode VI: The Return of the Jedi"></div><div class="slider__slide"><img src="https://m.media-amazon.com/images/I/A16XEWILpEL._AC_SL1500_.jpg" width="1000" height="1500" alt="Star Wars Episode VII: The Force Awakens"></div><div class="slider__slide"><img src="https://i5.walmartimages.com/asr/73ba1c54-12e2-4b7f-87a7-5cc2156bcfb3_1.ae7da2809defd06508aa680a0c55c7f1.jpeg" width="473" height="709" alt="Star Wars Episode VIII: The Last Jedi"></div><div class="slider__slide"><img src="https://i5.walmartimages.com/asr/354ced6f-f4d3-4f92-8530-c4185f7af5b4.456921c26b8b4ba7d3d860695f23ab5f.jpeg" width="668" height="1000" alt="Star Wars Episode IX: The Rise of Skywalker"></div></div><div class="slider__controls"><span><button class="slider__button left">&lt;&lt;</button><button class="slider__button right">&gt;&gt;</button></span></div></div>`
+	}
+
+	addStyleSheet() {
+		const styles = document.createElement("style");
+		styles.textContent = `.slider {display: flex;justify-content: center;max-width: ${this.settings.maxWidth};overflow: hidden;margin: 0 auto;flex-direction: column;touch-action: none;}  .slider :hover {cursor: grab;}  .slider__slides {display: flex;justify-content: center;}  .slider__slides.slide-image {transition: transform 0.5s ease;}  .slider__slide {flex: 0 0 33.3%; display: flex;flex-direction: column;padding: 0 0.25rem;box-sizing: border-box;}  .slider__slide img {width: 100%;height: 100%;}  .slider__controls {display: grid;place-content: center;padding: 20px;}  .slider__button {background: steelblue;border: 1px solid steelblue;padding: 1rem 1.25rem;margin: 0 1rem;color: #fff;font-size: 1rem;transition: all 0.25s ease;}  .slider__button:hover {color: steelblue;background: white;border: 1px solid steelblue;}`;
+		this.DOM.append(styles);
 	}
 
 	/**
@@ -128,7 +150,7 @@ class Slider extends HTMLElement {
 	};
 
 	/**
-	 * Apply translateX either the amount scrolled by the user or, if this.scrolled = 0 (falsy when click event or during pointerup) by the current width of a slide
+	 * Apply translateX by either the amount scrolled by the user or, if this.scrolled = 0 (falsy when click event or during pointerup) by the current width of a slide
 	 */
 	slideX = () => this.slider.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isLeft ? -1 : 1) * this.slideWidth}px)`;
 
