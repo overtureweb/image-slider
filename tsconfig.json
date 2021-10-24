@@ -4,8 +4,7 @@
     "target": "es6",
     "sourceMap": false,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "strict": true
-
+    "strict": true,
   },
   "exclude": [
     "node_modules"
