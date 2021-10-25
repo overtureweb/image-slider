@@ -2,8 +2,12 @@ const path = require('path');
 
 module.exports = (env) => {
 	return {
-		mode: env.mode,
+		mode: env.mode || "development",
 		entry: './src/index.ts',
+		devServer: {
+			static: './dist',
+			port: 3000
+		},
 		output: {
 			filename: 'bundle.js',
 			path: path.resolve(__dirname, 'dist'),

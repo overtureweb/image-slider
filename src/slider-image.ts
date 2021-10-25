@@ -29,7 +29,7 @@ class Slider extends HTMLElement {
 	// the actual image width set by the CSS flex property
 	slideWidth: number;
 
-	DOM: ShadowRoot | HTMLElement;
+	DOM: ShadowRoot;
 
 	settings: { maxWidth?: string }; // there will be other settings
 
@@ -37,14 +37,11 @@ class Slider extends HTMLElement {
 		super();
 		let defaults = {maxWidth: "100%"};
 		this.settings = {...defaults, ...this.dataset};
-
-		// comment out the next line to use the DOM vs Shadow DOM (dev vs prod)
 		this.attachShadow({mode: "open"});
-		this.DOM = this.shadowRoot || this;
-		if (this.shadowRoot) {
-			this.DOM.innerHTML = html;
-			this.addStyleSheet();
-		}
+		this.DOM = this.shadowRoot as ShadowRoot;
+		this.DOM.innerHTML = html;
+		this.addStyles();
+		this.addUserDefinedStyles();
 		this.slider = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
 		this.sliderControls = this.DOM.querySelector(".slider__controls") as HTMLDivElement;
 		this.slides = this.slider.querySelectorAll(".slider__slide")!;
@@ -54,10 +51,17 @@ class Slider extends HTMLElement {
 		this.setInitImageOrder(this.slides);
 	}
 
-	addStyleSheet() {
+	addStyles() {
 		const styles = document.createElement("style");
 		styles.textContent = css;
 		this.DOM.append(styles);
+	}
+
+	addUserDefinedStyles() {
+		const styleEl = document.createElement("style");
+		this.DOM.append(styleEl);
+		const stylesheet = styleEl.sheet;
+		stylesheet?.insertRule(`.slider{max-width:${this.settings.maxWidth}}`, 0);
 	}
 
 	/**
