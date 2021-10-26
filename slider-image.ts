@@ -162,3 +162,4 @@ class Slider extends HTMLElement {
 
 customElements.define("image-slider", Slider);
 
+console.log("hello");
