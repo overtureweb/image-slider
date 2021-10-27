@@ -1,24 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style>
-		:root {
-			font-family: system-ui;
-		}
-		.m-0 {
-			margin: 0;
-		}
-		.text-center {
-			text-align: center;
-		}
-	</style>
-	<title>Slider</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            font-family: system-ui;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+    <title>Slider</title>
 </head>
 <body class="m-0">
 <h1 class="text-center">May the Force Be With You</h1>
-<image-slider data-max-width="500px"></image-slider>
+<!--
+    available settings via data-*:
+    maxWidth: string
+    todo create a readme
+-->
+<image-slider></image-slider>
+<script type="application/json" id="images-map"> [
+    {
+        "src": "/images/episode-i.jpeg",
+        "alt": "Star Wars Episode I The Phantom Menace"
+    },
+    {
+        "src": "/images/episode-ii.jpg",
+        "alt": "Star Wars Episode II: Attack of the Clones"
+    },
+    {
+        "src": "/images/episode-iii.jpg",
+        "alt": "Star Wars Episode III: Revenge of the Sith"
+    },
+    {
+        "src": "/images/episode-iv.jpg",
+        "alt": "Star Wars Episode IV: A New Hope"
+    },
+    {
+        "src": "/images/episode-v.jpg",
+        "alt": "Star Wars Episode V: The Empire Strikes Back"
+    },
+    {
+        "src": "/images/episode-vi.jpg",
+        "alt": "Star Wars Episode VI: The Return of the Jedi"
+    },
+    {
+        "src": "/images/episode-vii.jpg",
+        "alt": "Star Wars Episode VII: The Force Awakens"
+    },
+    {
+        "src": "/images/episode-viii.jpeg",
+        "alt": "Star Wars Episode VIII: The Last Jedi"
+    },
+    {
+        "src": "/images/episode-ix.jpeg",
+        "alt": "Star Wars Episode IX: The Rise of Skywalker"
+    }
+]</script>
 <script src="bundle.js"></script>
 </body>
 </html>
