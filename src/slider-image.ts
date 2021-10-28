@@ -14,7 +14,7 @@ class Slider extends HTMLElement {
     sliderControls: HTMLDivElement;
 
     // collection of image slides which contain the image elements
-    slides: HTMLImageElement[] = [];
+    slides: HTMLDivElement[] = [];
 
     // current flex order of the image slides
     imageOrder: number[] = []
@@ -36,7 +36,7 @@ class Slider extends HTMLElement {
 
     DOM: ShadowRoot;
 
-    settings: { maxWidth?: string } = {}; // there will be other settings
+    settings: { maxWidth?: string; numSlides?: string } = {}; // there will be other settings
 
     constructor() {
         super();
@@ -44,33 +44,39 @@ class Slider extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.DOM = this.shadowRoot as ShadowRoot;
         this.DOM.innerHTML = html;
-        this.slider = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
         this.addStyleSheet();
-        this.addUserDefinedStyles();
-        this.initSlides();
         this.sliderControls = this.DOM.querySelector(".slider__controls") as HTMLDivElement;
-        this.setEvents();
+        this.slider = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
+        try {
+            this.slides = this.initSlides();
+            this.setInitialImageOrder(this.slides);
+            this.addUserDefinedStyles();
+            this.setEvents();
+        } catch (error) {
+            if (error instanceof Error)
+                console.log(error.message);
+        }
     }
 
-    initSlides(): void {
+    initSlides(): HTMLDivElement[] {
         const imagesData: string | null | undefined = document.getElementById("images-map")?.textContent;
-        if (!imagesData) return
+        if (!imagesData) throw new Error("No images were provided.");
         const imagesJSON: ImageMap[] = JSON.parse(imagesData);
-        imagesJSON.forEach(el => {
-            const slideWrapper: HTMLDivElement = document.createElement("div")
-            slideWrapper.classList.add("slider__slide")
+        return imagesJSON.map(el => {
+            const slideWrapper: HTMLDivElement = document.createElement("div");
+            slideWrapper.classList.add("slider__slide");
+
             const img: HTMLImageElement = document.createElement("img");
             img.src = el.src;
             img.alt = el.alt;
             img.onload = (() => {
                 img.width = img.naturalWidth;
                 img.height = img.naturalHeight;
-                slideWrapper.append(img);
-                this.slider.append(slideWrapper);
-                this.slides = [...this.slider.querySelectorAll(".slider__slide") as NodeListOf<HTMLImageElement>];
                 this.slideWidth = this.slides[0].getBoundingClientRect().width;
-                this.setInitImageOrder(this.slides);
             });
+            slideWrapper.append(img);
+            this.slider.append(slideWrapper);
+            return slideWrapper;
         });
     }
 
@@ -85,6 +91,13 @@ class Slider extends HTMLElement {
         this.DOM.append(styleEl);
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{max-width:${this.settings.maxWidth}}`, 0);
+        this.settings.numSlides && stylesheet?.insertRule(`.slider__slide{flex-basis:${this.calculateSlideRatio(+this.settings.numSlides)}%}`, 0);
+    }
+
+    calculateSlideRatio(numSlides: number) {
+        if (this.slides.length - numSlides >= 2) {
+            return Math.round(100 / numSlides * .9)
+        }
     }
 
     /**
@@ -104,7 +117,7 @@ class Slider extends HTMLElement {
      * Create and populate an array with each slide's index
      * @param slideList
      */
-    setInitImageOrder(slideList: Element[]): number[] {
+    setInitialImageOrder(slideList: Element[]): number[] {
         return this.imageOrder = Array.from({length: slideList.length}, (el, i) => i);
     }
 
