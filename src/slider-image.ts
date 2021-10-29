@@ -36,8 +36,6 @@ class Slider extends HTMLElement {
 
     DOM: ShadowRoot;
 
-    slider: HTMLDivElement;
-
     settings: { maxWidth?: string; numSlides?: string } = {}; // there will be other settings
 
     constructor() {
@@ -47,7 +45,6 @@ class Slider extends HTMLElement {
         this.DOM = this.shadowRoot as ShadowRoot;
         this.DOM.innerHTML = html;
         this.addStyleSheet();
-        this.slider = this.DOM.querySelector(".slider") as HTMLDivElement;
         this.slidesWrapper = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
         this.sliderControls = this.DOM.querySelector(".slider__controls") as HTMLDivElement;
         try {
@@ -104,10 +101,10 @@ class Slider extends HTMLElement {
      */
     setEvents(): void {
         this.sliderControls.addEventListener("click", this.handleClick);
-        this.slider.addEventListener("transitionend", this.reorderSlides);
-        this.slider.addEventListener("pointerdown", this.handlePointerDown);
-        this.slider.addEventListener("pointermove", this.handlePointerMove);
-        this.slider.addEventListener("pointerup", this.handlePointerUp);
+        this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
+        this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
+        this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
+        this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
         window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
     }
 
