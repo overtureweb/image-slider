@@ -8,7 +8,7 @@ type ImageMap = {
 
 class Slider extends HTMLElement {
     // slider wrapper for the image slides
-    slider: HTMLDivElement;
+    slidesWrapper: HTMLDivElement;
 
     // container for left, right buttons
     sliderControls: HTMLDivElement;
@@ -32,9 +32,11 @@ class Slider extends HTMLElement {
     scrolled: number = 0;
 
     // the actual image width set by the CSS flex property
-    slideWidth: number = 0;
+    slideWidthPx: number = 0;
 
     DOM: ShadowRoot;
+
+    slider: HTMLDivElement;
 
     settings: { maxWidth?: string; numSlides?: string } = {}; // there will be other settings
 
@@ -45,11 +47,14 @@ class Slider extends HTMLElement {
         this.DOM = this.shadowRoot as ShadowRoot;
         this.DOM.innerHTML = html;
         this.addStyleSheet();
+        this.slider = this.DOM.querySelector(".slider") as HTMLDivElement;
+        this.slidesWrapper = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
         this.sliderControls = this.DOM.querySelector(".slider__controls") as HTMLDivElement;
-        this.slider = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
         try {
             this.slides = this.initSlides();
-            this.setInitialImageOrder(this.slides);
+            this.slidesWrapper.append(...this.slides);
+            this.imageOrder = this.setInitialImageOrder(this.slides);
+            this.setSlidesFlexOrder();
             this.addUserDefinedStyles();
             this.setEvents();
         } catch (error) {
@@ -72,10 +77,9 @@ class Slider extends HTMLElement {
             img.onload = (() => {
                 img.width = img.naturalWidth;
                 img.height = img.naturalHeight;
-                this.slideWidth = this.slides[0].getBoundingClientRect().width;
+                this.slideWidthPx = this.slides[0].getBoundingClientRect().width;
             });
             slideWrapper.append(img);
-            this.slider.append(slideWrapper);
             return slideWrapper;
         });
     }
@@ -91,13 +95,7 @@ class Slider extends HTMLElement {
         this.DOM.append(styleEl);
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{max-width:${this.settings.maxWidth}}`, 0);
-        this.settings.numSlides && stylesheet?.insertRule(`.slider__slide{flex-basis:${this.calculateSlideRatio(+this.settings.numSlides)}%}`, 0);
-    }
-
-    calculateSlideRatio(numSlides: number) {
-        if (this.slides.length - numSlides >= 2) {
-            return Math.round(100 / numSlides * .9)
-        }
+        this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`, 0);
     }
 
     /**
@@ -106,21 +104,20 @@ class Slider extends HTMLElement {
      */
     setEvents(): void {
         this.sliderControls.addEventListener("click", this.handleClick);
-        this.slider.addEventListener("transitionend", this.reorderImages);
+        this.slider.addEventListener("transitionend", this.reorderSlides);
         this.slider.addEventListener("pointerdown", this.handlePointerDown);
         this.slider.addEventListener("pointermove", this.handlePointerMove);
         this.slider.addEventListener("pointerup", this.handlePointerUp);
-        window.addEventListener("resize", () => (this.slideWidth = this.slides[0].getBoundingClientRect().width));
+        window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
     }
 
     /**
-     * Create and populate an array with each slide's index
+     * Create and populate an array with each slide's index, slideswrapper is offset left by one slide, this makes the last slide first to offset this todo hacky
      * @param slideList
      */
     setInitialImageOrder(slideList: Element[]): number[] {
-        return this.imageOrder = Array.from({length: slideList.length}, (el, i) => i);
+        return Array.from({length: slideList.length}, (el, i) => (i + 1) % slideList.length);
     }
-
 
     /**
      * Sets the targeted direction, adds CSS class for smooth transition and calls the scroll function
@@ -130,25 +127,28 @@ class Slider extends HTMLElement {
         const target: HTMLDivElement = e.target as HTMLDivElement;
         if (target.nodeName !== "BUTTON") return;
         this.isLeft = target.classList.contains("left");
-        this.slider.classList.add("slide-image");
+        this.slidesWrapper.classList.add("slide-image");
         this.slideX();
     };
 
     /**
      * called as either the transitionend handler or manually when this.scrolled / this.imageWidth > 1
      */
-    reorderImages = (): void | number => {
-        this.slider.classList.remove("slide-image");
+    reorderSlides = (): void | number => {
+        this.slidesWrapper.classList.remove("slide-image");
         if (Math.abs(this.scrolled) > 0) return (this.scrolled = 0);
         // using length prevents a negative number in the subsequent modulo call
         let offset = this.isLeft ? this.slides.length - 1 : 1;
-        this.slides.forEach((el, i) => {
-            this.imageOrder[i] = (this.imageOrder[i] + offset) % this.slides.length;
-            el.style.order = this.imageOrder[i].toString();
-        });
-
+        this.setSlidesFlexOrder(offset);
         this.slideReset();
     };
+
+    setSlidesFlexOrder(offset: number = 0): void {
+        this.slides.forEach((slide, i) => {
+            this.imageOrder[i] = (this.imageOrder[i] + offset) % this.slides.length;
+            slide.style.order = this.imageOrder[i].toString();
+        });
+    }
 
     handlePointerDown = (e: PointerEvent): void => {
         e.preventDefault();
@@ -167,17 +167,17 @@ class Slider extends HTMLElement {
         this.scrolled = e.clientX - this.start;
         this.isLeft = this.scrolled < 0;
         this.slideX();
-        if (Math.abs(this.scrolled / this.slideWidth) > 1) {
+        if (Math.abs(this.scrolled / this.slideWidthPx) > 1) {
             this.scrolled = 0;
-            this.reorderImages();
+            this.reorderSlides();
             this.start = e.clientX;
         }
     };
 
     handlePointerUp = (e: PointerEvent): void => {
         e.preventDefault();
-        this.slider.classList.add("slide-image");
-        if (Math.abs(this.scrolled / this.slideWidth) > 0.5) {
+        this.slidesWrapper.classList.add("slide-image");
+        if (Math.abs(this.scrolled / this.slideWidthPx) > 0.5) {
             this.scrolled = 0;
             this.slideX();
         } else {
@@ -189,12 +189,12 @@ class Slider extends HTMLElement {
     /**
      * Apply translateX by either the amount scrolled by the user or, if this.scrolled = 0 (falsy when click event or during pointerup) by the current width of a slide
      */
-    slideX = (): string => this.slider.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isLeft ? -1 : 1) * this.slideWidth}px)`;
+    slideX = (): string => this.slidesWrapper.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isLeft ? -1 : 1) * this.slideWidthPx}px)`;
 
     /**
      * TranslateX back to zero
      */
-    slideReset = (): string => this.slider.style.transform = "translateX(0)";
+    slideReset = (): string => this.slidesWrapper.style.transform = "translateX(0)";
 }
 
 export default Slider;
