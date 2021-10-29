@@ -36,7 +36,7 @@ class Slider extends HTMLElement {
 
     DOM: ShadowRoot;
 
-    settings: { maxWidth?: string; numSlides?: string } = {}; // there will be other settings
+    settings: { maxWidth?: string; numSlides?: string; hideControls?: boolean } = {}; // there will be other settings
 
     constructor() {
         super();
@@ -64,7 +64,7 @@ class Slider extends HTMLElement {
         const imagesData: string | null | undefined = document.getElementById("images-map")?.textContent;
         if (!imagesData) throw new Error("No images were provided.");
         const imagesJSON: ImageMap[] = JSON.parse(imagesData);
-        return imagesJSON.map(el => {
+        const slides = imagesJSON.map(el => {
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
 
@@ -79,6 +79,10 @@ class Slider extends HTMLElement {
             slideWrapper.append(img);
             return slideWrapper;
         });
+
+        let clonedSlides = slides.map(slide => slide.cloneNode(true) as HTMLDivElement);
+        slides.push(...clonedSlides);
+        return slides;
     }
 
     addStyleSheet(): void {
@@ -93,6 +97,7 @@ class Slider extends HTMLElement {
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{max-width:${this.settings.maxWidth}}`, 0);
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`, 0);
+        this.settings.hideControls && (this.sliderControls.style.display = "none");
     }
 
     /**
