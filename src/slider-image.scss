@@ -1,0 +1,68 @@
+.slider {
+  --slide-width: 31.35%;
+  --max-width: 100%;
+  display: flex;
+  justify-content: center;
+  max-width: var(--max-width);
+  overflow: hidden;
+  margin: 0 auto;
+  flex-direction: column;
+  touch-action: none;
+
+  &:hover {
+    cursor: grab;
+  }
+
+  &__slides {
+    display: flex;
+    position: relative;
+    left: calc(var(--slide-width) * -1); // divide 100 by # of slides and subtract 5%
+    &.slide-image {
+      --transition-speed: .5s;
+      transition: transform var(--transition-speed) cubic-bezier(0, 0, 1, 1);
+    }
+    &:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: var(--slide-width);
+    }
+  }
+
+  &__slide {
+    flex: 0 0 var(--slide-width); // the flex basis value is equal to the inverse of the left value above
+    display: flex;
+    flex-direction: column;
+    padding: 0 0.25rem;
+    box-sizing: border-box;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+
+  &__controls {
+    display: grid;
+    place-content: center;
+    padding: 20px;
+  }
+
+  &__button {
+    background: steelblue;
+    border: 1px solid steelblue;
+    padding: 1rem 1.25rem;
+    margin: 0 1rem;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+
+    &:hover {
+      color: steelblue;
+      background: white;
+      border: 1px solid steelblue;
+    }
+  }
+}
