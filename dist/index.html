@@ -28,12 +28,12 @@
     num-slides: string
     hide-controls: boolean in normal mode it advances one slide in either direction, crawl mode it changes the direction
     autoplay: boolean advances once slide, touch events can change the direction no effect when in crawl mode
-    autoplay-interval (ms): no effect when in crawl mode
+    autoplay-interval (ms): no effect when in crawl mode default 2000ms
     crawl-mode: moves left in a crawl style and disabled touch events
-    crawl-speed: (ms) speed of the crawl
+    crawl-speed: (ms) speed of the crawl default 4000ms
 
 -->
-<image-slider data-hide-controls="true" data-max-width="720px" data-num-slides="4" data-autoplay="true" data-autoplay-interval="4000"></image-slider>
+<image-slider data-hide-controls="true" data-max-width="720px" data-num-slides="4" data-autoplay="true"></image-slider>
 <script type="application/json" id="images-map"> [
     {
         "src": "/images/episode-i.jpg",

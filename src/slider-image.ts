@@ -83,16 +83,16 @@ class Slider extends HTMLElement {
     initSlides(): HTMLDivElement[] {
         const imagesData: string | null | undefined = document.getElementById("images-map")?.textContent;
         if (!imagesData) throw new Error("No images were provided.");
-        const imagesJSON: ImageMap[] = JSON.parse(imagesData);
+        const imageMap: ImageMap[] = JSON.parse(imagesData);
         const slides: HTMLDivElement[] = [];
 
-        for (let i = 0; i < imagesJSON.length; i++) {
+        for (let i = 0; i < imageMap.length; i++) {
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
 
             const img: HTMLImageElement = document.createElement("img");
-            img.src = imagesJSON[i].src;
-            img.alt = imagesJSON[i].alt;
+            img.src = imageMap[i].src;
+            img.alt = imageMap[i].alt;
             img.onload = (() => {
                 img.width = img.naturalWidth;
                 img.height = img.naturalHeight;
@@ -100,7 +100,7 @@ class Slider extends HTMLElement {
             });
             slideWrapper.append(img);
             slides[i] = slideWrapper;
-            slides[i + imagesJSON.length] = slideWrapper.cloneNode(true) as HTMLDivElement;
+            slides[i + imageMap.length] = slideWrapper.cloneNode(true) as HTMLDivElement;
         }
         return slides;
     }
