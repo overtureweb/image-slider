@@ -20,7 +20,7 @@ class Slider extends HTMLElement {
     imageOrder: number[] = []
 
     // is slider moving left?
-    isLeft: boolean = true;
+    isSlidingLeft: boolean = true;
 
     // is this a pointer event?
     isScrolling: boolean = false;
@@ -34,25 +34,36 @@ class Slider extends HTMLElement {
     // the actual image width set by the CSS flex property
     slideWidthPx: number = 0;
 
-    DOM: ShadowRoot;
+    shadowDOM: ShadowRoot;
 
-    settings: { maxWidth?: string; numSlides?: string; hideControls?: boolean } = {}; // there will be other settings
+    settings: {
+        maxWidth?: string;
+        numSlides?: string;
+        hideControls?: boolean;
+        autoplay?: boolean;
+        autoplayInterval?: number;
+        crawlMode?: boolean;
+        crawlSpeed?: number;
+    } = {};
+
+    autoPlayIntervalID: NodeJS.Timer | any;
 
     constructor() {
         super();
+        // todo need to validate types and discard bad values
         this.settings = {...this.settings, ...this.dataset};
         this.attachShadow({mode: "open"});
-        this.DOM = this.shadowRoot as ShadowRoot;
-        this.DOM.innerHTML = html;
+        this.shadowDOM = this.shadowRoot as ShadowRoot;
+        this.shadowDOM.innerHTML = html;
         this.addStyleSheet();
-        this.slidesWrapper = this.DOM.querySelector(".slider__slides") as HTMLDivElement;
-        this.sliderControls = this.DOM.querySelector(".slider__controls") as HTMLDivElement;
+        this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
+        this.sliderControls = this.shadowDOM.querySelector(".slider__controls") as HTMLDivElement;
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
             this.imageOrder = this.setInitialImageOrder(this.slides);
             this.setSlidesFlexOrder();
-            this.addUserDefinedStyles();
+            this.handleUserDefinedOptions();
             this.setEvents();
         } catch (error) {
             if (error instanceof Error)
@@ -60,11 +71,24 @@ class Slider extends HTMLElement {
         }
     }
 
+    setAutoPlay() {
+        const leftButton = this.shadowDOM.querySelector("button.left") as HTMLButtonElement;
+        const rightButton = this.shadowDOM.querySelector("button.right") as HTMLButtonElement;
+        const MIN_INTERVAL = 2000;
+        let interval = this.settings.autoplay ? Math.max(MIN_INTERVAL, Number(this.settings.autoplayInterval)) : 0;
+        return setInterval(() => this.isSlidingLeft ? leftButton.click() : rightButton?.click(), interval)
+    }
+
+    clearAutoPlay(intervalID: NodeJS.Timer) {
+        return clearInterval(intervalID);
+    }
+
     initSlides(): HTMLDivElement[] {
         const imagesData: string | null | undefined = document.getElementById("images-map")?.textContent;
         if (!imagesData) throw new Error("No images were provided.");
         const imagesJSON: ImageMap[] = JSON.parse(imagesData);
         const slides = imagesJSON.map(el => {
+            // todo do we need the div wrapper??
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
 
@@ -88,16 +112,21 @@ class Slider extends HTMLElement {
     addStyleSheet(): void {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
-        this.DOM.append(styles);
+        this.shadowDOM.append(styles);
     }
 
-    addUserDefinedStyles(): void {
+    handleUserDefinedOptions(): void {
+        (this.settings.autoplay || this.settings.crawlMode) && (this.autoPlayIntervalID = this.setAutoPlay());
         const styleEl: HTMLStyleElement = document.createElement("style");
-        this.DOM.append(styleEl);
+        this.shadowDOM.append(styleEl);
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
-        this.settings.maxWidth && stylesheet?.insertRule(`.slider{max-width:${this.settings.maxWidth}}`, 0);
-        this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`, 0);
+        this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
+        this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
         this.settings.hideControls && (this.sliderControls.style.display = "none");
+        if (this.settings.crawlMode) {
+            stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${Number(this.settings.crawlSpeed)}ms`);
+            stylesheet?.insertRule(`.slider:hover{cursor:default}`);
+        }
     }
 
     /**
@@ -105,12 +134,14 @@ class Slider extends HTMLElement {
      * all the event handler methods have been defined using function expression syntax to avoid the need for .bind(this) here
      */
     setEvents(): void {
+        window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
         this.sliderControls.addEventListener("click", this.handleClick);
         this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
-        this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
-        this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
-        this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
-        window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
+        if (!this.settings.crawlMode) {
+            this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
+            this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
+            this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
+        }
     }
 
     /**
@@ -128,7 +159,7 @@ class Slider extends HTMLElement {
     handleClick = (e: MouseEvent): void => {
         const target: HTMLDivElement = e.target as HTMLDivElement;
         if (target.nodeName !== "BUTTON") return;
-        this.isLeft = target.classList.contains("left");
+        this.isSlidingLeft = target.classList.contains("left");
         this.slidesWrapper.classList.add("slide-image");
         this.slideX();
     };
@@ -140,7 +171,7 @@ class Slider extends HTMLElement {
         this.slidesWrapper.classList.remove("slide-image");
         if (Math.abs(this.scrolled) > 0) return (this.scrolled = 0);
         // using length prevents a negative number in the subsequent modulo call
-        let offset = this.isLeft ? this.slides.length - 1 : 1;
+        let offset = this.isSlidingLeft ? this.slides.length - 1 : 1;
         this.setSlidesFlexOrder(offset);
         this.slideReset();
     };
@@ -161,13 +192,14 @@ class Slider extends HTMLElement {
         e.preventDefault();
         this.isScrolling = true;
         this.start = e.clientX;
+        this.clearAutoPlay(this.autoPlayIntervalID);
     };
 
     handlePointerMove = (e: PointerEvent): void => {
         e.preventDefault();
         if (!this.isScrolling) return;
         this.scrolled = e.clientX - this.start;
-        this.isLeft = this.scrolled < 0;
+        this.isSlidingLeft = this.scrolled < 0;
         this.slideX();
         if (Math.abs(this.scrolled / this.slideWidthPx) > 1) {
             this.scrolled = 0;
@@ -186,12 +218,13 @@ class Slider extends HTMLElement {
             this.slideReset();
         }
         this.isScrolling = false;
+        this.settings.autoplay && (this.autoPlayIntervalID = this.setAutoPlay());
     };
 
     /**
      * Apply translateX by either the amount scrolled by the user or, if this.scrolled = 0 (falsy when click event or during pointerup) by the current width of a slide
      */
-    slideX = (): string => this.slidesWrapper.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isLeft ? -1 : 1) * this.slideWidthPx}px)`;
+    slideX = (): string => this.slidesWrapper.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isSlidingLeft ? -1 : 1) * this.slideWidthPx}px)`;
 
     /**
      * TranslateX back to zero

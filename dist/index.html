@@ -24,15 +24,17 @@
 <h1 class="text-center">May the Force Be With You</h1>
 <!--
     available settings via data-*:
-    maxWidth: string
-    numSlides: string
-    hideControls: boolean
-    todo:
-    autoplay: boolean
-    autoplay-interval (ms): 2000
+    max-width: string
+    num-slides: string
+    hideControls: boolean in normal mode it advances one slide in either direction, crawl mode it changes the direction
+    autoplay: boolean advances once slide, touch events can change the direction no effect when in crawl mode
+    autoplay-interval (ms): no effect when in crawl mode
+    crawl-mode: moves left in a crawl style
+    crawl-speed: (ms) speed of the crawl
 
 -->
-<image-slider data-hide-controls="true" data-max-width="720px" data-num-slides="5"></image-slider>
+<image-slider data-max-width="720px" data-num-slides="4" data-autoplay="true" data-autoplay-interval="2000" data-hide-controls="true">
+</image-slider>
 <script type="application/json" id="images-map"> [
     {
         "src": "/images/episode-i.jpg",
