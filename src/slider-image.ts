@@ -34,30 +34,27 @@ class Slider extends HTMLElement {
     // the actual image width set by the CSS flex property
     slideWidthPx: number = 0;
 
-    shadowDOM: ShadowRoot;
-
     settings: {
         maxWidth?: string;
         numSlides?: string;
         hideControls?: boolean;
         autoplay?: boolean;
-        autoplayInterval?: number;
+        autoplayInterval: number;
         crawlMode?: boolean;
-        crawlSpeed?: number;
-    } = {crawlSpeed: 4000};
+        crawlSpeed: number;
+    } = {crawlSpeed: 4000, autoplayInterval: 2000};
 
     autoPlayIntervalID: NodeJS.Timer | any;
 
     constructor() {
         super();
-        // todo need to validate types and discard bad values
+        // todo need to validate user provided data types and discard bad values
         this.settings = {...this.settings, ...this.dataset};
         this.attachShadow({mode: "open"});
-        this.shadowDOM = this.shadowRoot as ShadowRoot;
-        this.shadowDOM.innerHTML = html;
+        (this.shadowRoot as ShadowRoot).innerHTML = html;
         this.addStyleSheet();
-        this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
-        this.sliderControls = this.shadowDOM.querySelector(".slider__controls") as HTMLDivElement;
+        this.slidesWrapper = this.shadowRoot?.querySelector(".slider__slides") as HTMLDivElement;
+        this.sliderControls = this.shadowRoot?.querySelector(".slider__controls") as HTMLDivElement;
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
@@ -72,8 +69,8 @@ class Slider extends HTMLElement {
     }
 
     setAutoPlay() {
-        const leftButton = this.shadowDOM.querySelector("button.left") as HTMLButtonElement;
-        const rightButton = this.shadowDOM.querySelector("button.right") as HTMLButtonElement;
+        const leftButton = this.shadowRoot?.querySelector("button.left") as HTMLButtonElement;
+        const rightButton = this.shadowRoot?.querySelector("button.right") as HTMLButtonElement;
         const MIN_INTERVAL = 2000;
         let interval = this.settings.autoplay ? Math.max(MIN_INTERVAL, Number(this.settings.autoplayInterval)) : 0;
         return setInterval(() => this.isSlidingLeft ? leftButton.click() : rightButton?.click(), interval)
@@ -111,13 +108,13 @@ class Slider extends HTMLElement {
     addStyleSheet(): void {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
-        this.shadowDOM.append(styles);
+        this.shadowRoot?.append(styles);
     }
 
     handleUserDefinedOptions(): void {
         (this.settings.autoplay || this.settings.crawlMode) && (this.autoPlayIntervalID = this.setAutoPlay());
         const styleEl: HTMLStyleElement = document.createElement("style");
-        this.shadowDOM.append(styleEl);
+        this.shadowRoot?.append(styleEl);
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
