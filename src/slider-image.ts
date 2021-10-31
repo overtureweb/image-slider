@@ -87,25 +87,24 @@ class Slider extends HTMLElement {
         const imagesData: string | null | undefined = document.getElementById("images-map")?.textContent;
         if (!imagesData) throw new Error("No images were provided.");
         const imagesJSON: ImageMap[] = JSON.parse(imagesData);
-        const slides = imagesJSON.map(el => {
-            // todo do we need the div wrapper??
+        const slides: HTMLDivElement[] = [];
+
+        for (let i = 0; i < imagesJSON.length; i++) {
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
 
             const img: HTMLImageElement = document.createElement("img");
-            img.src = el.src;
-            img.alt = el.alt;
+            img.src = imagesJSON[i].src;
+            img.alt = imagesJSON[i].alt;
             img.onload = (() => {
                 img.width = img.naturalWidth;
                 img.height = img.naturalHeight;
                 this.slideWidthPx = this.slides[0].getBoundingClientRect().width;
             });
             slideWrapper.append(img);
-            return slideWrapper;
-        });
-
-        let clonedSlides = slides.map(slide => slide.cloneNode(true) as HTMLDivElement);
-        slides.push(...clonedSlides);
+            slides[i] = slideWrapper;
+            slides[i + imagesJSON.length] = slideWrapper.cloneNode(true) as HTMLDivElement;
+        }
         return slides;
     }
 
