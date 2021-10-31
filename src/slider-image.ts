@@ -44,7 +44,7 @@ class Slider extends HTMLElement {
         autoplayInterval?: number;
         crawlMode?: boolean;
         crawlSpeed?: number;
-    } = {};
+    } = {crawlSpeed: 4000};
 
     autoPlayIntervalID: NodeJS.Timer | any;
 
@@ -123,6 +123,7 @@ class Slider extends HTMLElement {
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
         this.settings.hideControls && (this.sliderControls.style.display = "none");
         if (this.settings.crawlMode) {
+            //todo should also put a minimum value here
             stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${Number(this.settings.crawlSpeed)}ms`);
             stylesheet?.insertRule(`.slider:hover{cursor:default}`);
         }
