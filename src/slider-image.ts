@@ -6,6 +6,15 @@ type ImageMap = {
     alt: string;
 }
 
+type UserSettings = {
+    maxWidth?: string;
+    numSlides?: string;
+    hideControls?: boolean;
+    autoplayMode?: string;
+    autoplayStepTiming: number;
+    autoplayCrawlTiming: number;
+}
+
 class Slider extends HTMLElement {
     // slider wrapper for the image slides
     slidesWrapper: HTMLDivElement;
@@ -34,27 +43,24 @@ class Slider extends HTMLElement {
     // the actual image width set by the CSS flex property
     slideWidthPx: number = 0;
 
-    settings: {
-        maxWidth?: string;
-        numSlides?: string;
-        hideControls?: boolean;
-        autoplay?: boolean;
-        autoplayInterval: number;
-        crawlMode?: boolean;
-        crawlSpeed: number;
-    } = {crawlSpeed: 4000, autoplayInterval: 2000};
+    shadowDOM: ShadowRoot;
 
+    settings: UserSettings = {autoplayStepTiming: 2000, autoplayCrawlTiming: 6000};
+
+    autoplay: () => NodeJS.Timer | void = () => {
+    };
     autoPlayIntervalID: NodeJS.Timer | any;
 
     constructor() {
         super();
-        // todo need to validate user provided data types and discard bad values
+        // todo need to validate types and discard bad values
         this.settings = {...this.settings, ...this.dataset};
         this.attachShadow({mode: "open"});
-        (this.shadowRoot as ShadowRoot).innerHTML = html;
+        this.shadowDOM = this.shadowRoot as ShadowRoot;
+        this.shadowDOM.innerHTML = html;
         this.addStyleSheet();
-        this.slidesWrapper = this.shadowRoot?.querySelector(".slider__slides") as HTMLDivElement;
-        this.sliderControls = this.shadowRoot?.querySelector(".slider__controls") as HTMLDivElement;
+        this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
+        this.sliderControls = this.shadowDOM.querySelector(".slider__controls") as HTMLDivElement;
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
@@ -68,12 +74,22 @@ class Slider extends HTMLElement {
         }
     }
 
-    setAutoPlay() {
-        const leftButton = this.shadowRoot?.querySelector("button.left") as HTMLButtonElement;
-        const rightButton = this.shadowRoot?.querySelector("button.right") as HTMLButtonElement;
-        const MIN_INTERVAL = 2000;
-        let interval = this.settings.autoplay ? Math.max(MIN_INTERVAL, Number(this.settings.autoplayInterval)) : 0;
-        return setInterval(() => this.isSlidingLeft ? leftButton.click() : rightButton?.click(), interval)
+    initAutoPlay(settings: any) {
+        const {autoplayMode, autoplayStepTiming} = settings;
+        const [leftBtn, rightBtn]: NodeListOf<HTMLButtonElement> = this.sliderControls.querySelectorAll("button");
+        return () => {
+            switch (autoplayMode) {
+                case "crawl":
+                    this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
+                    this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
+                    this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
+                    return this.isSlidingLeft ? leftBtn.click() : rightBtn?.click();
+                case "step":
+                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn?.click(), autoplayStepTiming)
+                default:
+                    break;
+            }
+        }
     }
 
     clearAutoPlay(intervalID: NodeJS.Timer) {
@@ -89,7 +105,6 @@ class Slider extends HTMLElement {
         for (let i = 0; i < imageMap.length; i++) {
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
-
             const img: HTMLImageElement = document.createElement("img");
             img.src = imageMap[i].src;
             img.alt = imageMap[i].alt;
@@ -108,20 +123,19 @@ class Slider extends HTMLElement {
     addStyleSheet(): void {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
-        this.shadowRoot?.append(styles);
+        this.shadowDOM.append(styles);
     }
 
     handleUserDefinedOptions(): void {
-        (this.settings.autoplay || this.settings.crawlMode) && (this.autoPlayIntervalID = this.setAutoPlay());
+        this.autoplay = this.initAutoPlay(this.settings);
         const styleEl: HTMLStyleElement = document.createElement("style");
-        this.shadowRoot?.append(styleEl);
+        this.shadowDOM.append(styleEl);
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
         this.settings.hideControls && (this.sliderControls.style.display = "none");
-        if (this.settings.crawlMode) {
-            //todo should also put a minimum value here
-            stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${Number(this.settings.crawlSpeed)}ms`);
+        if (this.settings.autoplayMode === "crawl") {
+            stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${this.settings.autoplayCrawlTiming}ms`);
             stylesheet?.insertRule(`.slider:hover{cursor:default}`);
         }
     }
@@ -131,14 +145,14 @@ class Slider extends HTMLElement {
      * all the event handler methods have been defined using function expression syntax to avoid the need for .bind(this) here
      */
     setEvents(): void {
-        window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
-        this.sliderControls.addEventListener("click", this.handleClick);
+        (this.sliderControls.querySelector(".slider__button.left") as HTMLButtonElement).addEventListener("click", this.handleClick);
+        (this.sliderControls.querySelector(".slider__button.right") as HTMLButtonElement).addEventListener("click", this.handleClick);
         this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
-        if (!this.settings.crawlMode) {
-            this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
-            this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
-            this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
-        }
+        this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
+        this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
+        this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
+        window.onload = this.autoplay;
+        window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
     }
 
     /**
@@ -154,9 +168,8 @@ class Slider extends HTMLElement {
      * @param e
      */
     handleClick = (e: MouseEvent): void => {
-        const target: HTMLDivElement = e.target as HTMLDivElement;
-        if (target.nodeName !== "BUTTON") return;
-        this.isSlidingLeft = target.classList.contains("left");
+        const button = e.currentTarget as HTMLButtonElement;
+        this.isSlidingLeft = button.classList.contains("left");
         this.slidesWrapper.classList.add("slide-image");
         this.slideX();
     };
@@ -171,6 +184,7 @@ class Slider extends HTMLElement {
         let offset = this.isSlidingLeft ? this.slides.length - 1 : 1;
         this.setSlidesFlexOrder(offset);
         this.slideReset();
+        this.settings.autoplayMode === "crawl" && setTimeout(() => this.autoplay());
     };
 
     setSlidesFlexOrder(offset: number = 0): void {
@@ -186,7 +200,6 @@ class Slider extends HTMLElement {
         // shows the grab cursor for mouseevents until the pointerup event is called
         currentTarget.setPointerCapture(e.pointerId);
         currentTarget.style.cursor = "grabbing";
-        e.preventDefault();
         this.isScrolling = true;
         this.start = e.clientX;
         this.clearAutoPlay(this.autoPlayIntervalID);
@@ -215,7 +228,7 @@ class Slider extends HTMLElement {
             this.slideReset();
         }
         this.isScrolling = false;
-        this.settings.autoplay && (this.autoPlayIntervalID = this.setAutoPlay());
+        this.autoplay();
     };
 
     /**
