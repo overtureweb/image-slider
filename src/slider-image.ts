@@ -19,9 +19,6 @@ class Slider extends HTMLElement {
     // slider wrapper for the image slides
     slidesWrapper: HTMLDivElement;
 
-    // container for left, right buttons
-    sliderControls: HTMLDivElement;
-
     // collection of image slides which contain the image elements
     slides: HTMLDivElement[] = [];
 
@@ -60,7 +57,6 @@ class Slider extends HTMLElement {
         this.shadowDOM.innerHTML = html;
         this.addStyleSheet();
         this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
-        this.sliderControls = this.shadowDOM.querySelector(".slider__controls") as HTMLDivElement;
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
@@ -76,7 +72,7 @@ class Slider extends HTMLElement {
 
     initAutoPlay(settings: any) {
         const {autoplayMode, autoplayStepTiming} = settings;
-        const [leftBtn, rightBtn]: NodeListOf<HTMLButtonElement> = this.sliderControls.querySelectorAll("button");
+        const [leftBtn, rightBtn]: NodeListOf<HTMLButtonElement> = this.shadowDOM.querySelectorAll("button");
         return () => {
             switch (autoplayMode) {
                 case "crawl":
@@ -133,7 +129,6 @@ class Slider extends HTMLElement {
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
-        this.settings.hideControls && (this.sliderControls.style.display = "none");
         if (this.settings.autoplayMode === "crawl") {
             stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${this.settings.autoplayCrawlTiming}ms`);
             stylesheet?.insertRule(`.slider:hover{cursor:default}`);
@@ -145,8 +140,8 @@ class Slider extends HTMLElement {
      * all the event handler methods have been defined using function expression syntax to avoid the need for .bind(this) here
      */
     setEvents(): void {
-        (this.sliderControls.querySelector(".slider__button.left") as HTMLButtonElement).addEventListener("click", this.handleClick);
-        (this.sliderControls.querySelector(".slider__button.right") as HTMLButtonElement).addEventListener("click", this.handleClick);
+        (this.shadowDOM.querySelector(".slider__button.left") as HTMLButtonElement).addEventListener("click", this.handleClick);
+        (this.shadowDOM.querySelector(".slider__button.right") as HTMLButtonElement).addEventListener("click", this.handleClick);
         this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
         this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
