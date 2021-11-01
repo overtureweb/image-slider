@@ -1,14 +1,14 @@
 .slider {
   --slide-width: 31.35%; // divide 100 by # of slides and subtract 5%
   --max-width: 100%;
-  display: flex;
-  justify-content: center;
+  //display: flex;
+  //justify-content: center;
   max-width: var(--max-width);
   overflow: hidden;
   margin: 0 auto;
-  flex-direction: column;
+  //flex-direction: column;
   touch-action: none;
-  position: relative;
+  //position: relative;
 
   &:hover {
     cursor: grab;
@@ -56,7 +56,6 @@
     color: #fff;
     font-size: 1rem;
     transition: all 0.25s ease;
-    display: inline;
     position: absolute;
     &.left {
       left: 0;

@@ -62,7 +62,7 @@ class Slider extends HTMLElement {
             this.slidesWrapper.append(...this.slides);
             this.imageOrder = this.setInitialImageOrder(this.slides);
             this.setSlidesFlexOrder();
-            this.handleUserDefinedOptions();
+            this.handleUserSettings();
             this.setEvents();
         } catch (error) {
             if (error instanceof Error)
@@ -70,18 +70,19 @@ class Slider extends HTMLElement {
         }
     }
 
-    initAutoPlay(settings: any) {
-        const {autoplayMode, autoplayStepTiming} = settings;
+    initAutoPlay(settings: UserSettings) {
+        const {autoplayMode: mode, autoplayStepTiming: interval} = settings;
+        //todo move buttons to constructor?
         const [leftBtn, rightBtn]: NodeListOf<HTMLButtonElement> = this.shadowDOM.querySelectorAll("button");
         return () => {
-            switch (autoplayMode) {
+            switch (mode) {
                 case "crawl":
                     this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
                     this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
                     this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
                     return this.isSlidingLeft ? leftBtn.click() : rightBtn?.click();
                 case "step":
-                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn?.click(), autoplayStepTiming)
+                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn?.click(), interval)
                 default:
                     break;
             }
@@ -122,13 +123,14 @@ class Slider extends HTMLElement {
         this.shadowDOM.append(styles);
     }
 
-    handleUserDefinedOptions(): void {
+    handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(this.settings);
         const styleEl: HTMLStyleElement = document.createElement("style");
         this.shadowDOM.append(styleEl);
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
+        this.settings.hideControls && this.shadowDOM.querySelectorAll("button").forEach(btn => btn.hidden = true)
         if (this.settings.autoplayMode === "crawl") {
             stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${this.settings.autoplayCrawlTiming}ms`);
             stylesheet?.insertRule(`.slider:hover{cursor:default}`);
@@ -140,8 +142,8 @@ class Slider extends HTMLElement {
      * all the event handler methods have been defined using function expression syntax to avoid the need for .bind(this) here
      */
     setEvents(): void {
-        (this.shadowDOM.querySelector(".slider__button.left") as HTMLButtonElement).addEventListener("click", this.handleClick);
-        (this.shadowDOM.querySelector(".slider__button.right") as HTMLButtonElement).addEventListener("click", this.handleClick);
+        // todo move buttons to constructor?
+        this.shadowDOM.querySelectorAll("button").forEach(btn => btn.addEventListener("click", this.handleClick));
         this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
         this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
@@ -151,7 +153,7 @@ class Slider extends HTMLElement {
     }
 
     /**
-     * Create and populate an array with each slide's index, slideswrapper is offset left by one slide, this makes the last slide first to offset this todo hacky
+     * Create and populate an array with each slide's index, slideswrapper is offset left by one slide, this method makes the last slide first to counter the effect
      * @param slideList
      */
     setInitialImageOrder(slideList: Element[]): number[] {
