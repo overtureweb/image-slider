@@ -1,14 +1,13 @@
 .slider {
   --slide-width: 31.35%; // divide 100 by # of slides and subtract 5%
   --max-width: 100%;
-  //display: flex;
-  //justify-content: center;
   max-width: var(--max-width);
   overflow: hidden;
   margin: 0 auto;
-  //flex-direction: column;
   touch-action: none;
-  //position: relative;
+  display: flex;
+  align-items: center;
+  position: relative;
 
   &:hover {
     cursor: grab;
@@ -35,6 +34,8 @@
     flex: 0 0 var(--slide-width); // the flex basis value is equal to the inverse of the left value above
     padding-right: .5rem;
     box-sizing: border-box;
+    display: grid;
+    place-content: center;
 
     img {
       width: 100%;
@@ -58,10 +59,10 @@
     transition: all 0.25s ease;
     position: absolute;
     &.left {
-      left: 0;
+      left: 5px;
     }
     &.right {
-      right: 0
+      right: 5px;
     }
 
     &:hover {

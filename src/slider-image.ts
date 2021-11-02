@@ -8,8 +8,8 @@ type ImageMap = {
 
 type UserSettings = {
     maxWidth?: string;
-    numSlides?: string;
-    hideControls?: boolean;
+    numSlides: number;
+    hideControls: boolean;
     autoplayMode?: string;
     autoplayStepTiming: number;
     autoplayCrawlTiming: number;
@@ -28,7 +28,7 @@ class Slider extends HTMLElement {
     // is slider moving left?
     isSlidingLeft: boolean = true;
 
-    // is this a pointer event?
+    // is a pointer event in progress
     isScrolling: boolean = false;
 
     // stores the current X position of a pointer event
@@ -42,25 +42,35 @@ class Slider extends HTMLElement {
 
     shadowDOM: ShadowRoot;
 
-    settings: UserSettings = {autoplayStepTiming: 2000, autoplayCrawlTiming: 6000};
+    // settings provided by the user via HTML data-* attributes
+    // todo need to validate types and discard bad values maybe a UserSettings class for validation and type assertion
+    settings: UserSettings = {
+        autoplayStepTiming: 2000,
+        autoplayCrawlTiming: 6000,
+        numSlides: 3,
+        hideControls: false
+    };
 
+    // autoplay function is
     autoplay: () => NodeJS.Timer | void = () => {
     };
     autoPlayIntervalID: NodeJS.Timer | any;
 
+    sliderButtons: NodeListOf<HTMLButtonElement>;
+
     constructor() {
         super();
-        // todo need to validate types and discard bad values
         this.settings = {...this.settings, ...this.dataset};
         this.attachShadow({mode: "open"});
         this.shadowDOM = this.shadowRoot as ShadowRoot;
         this.shadowDOM.innerHTML = html;
         this.addStyleSheet();
         this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
+        this.sliderButtons = this.shadowDOM.querySelectorAll("button");
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
-            this.imageOrder = this.setInitialImageOrder(this.slides);
+            this.imageOrder = this.initSlidesFlexOrder(this.slides);
             this.setSlidesFlexOrder();
             this.handleUserSettings();
             this.setEvents();
@@ -72,8 +82,7 @@ class Slider extends HTMLElement {
 
     initAutoPlay(settings: UserSettings) {
         const {autoplayMode: mode, autoplayStepTiming: interval} = settings;
-        //todo move buttons to constructor?
-        const [leftBtn, rightBtn]: NodeListOf<HTMLButtonElement> = this.shadowDOM.querySelectorAll("button");
+        const [leftBtn, rightBtn] = this.sliderButtons
         return () => {
             switch (mode) {
                 case "crawl":
@@ -130,7 +139,7 @@ class Slider extends HTMLElement {
         const stylesheet: CSSStyleSheet | null = styleEl.sheet;
         this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
         this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
-        this.settings.hideControls && this.shadowDOM.querySelectorAll("button").forEach(btn => btn.hidden = true)
+        this.settings.hideControls && this.sliderButtons.forEach(btn => btn.hidden = true);
         if (this.settings.autoplayMode === "crawl") {
             stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${this.settings.autoplayCrawlTiming}ms`);
             stylesheet?.insertRule(`.slider:hover{cursor:default}`);
@@ -142,8 +151,7 @@ class Slider extends HTMLElement {
      * all the event handler methods have been defined using function expression syntax to avoid the need for .bind(this) here
      */
     setEvents(): void {
-        // todo move buttons to constructor?
-        this.shadowDOM.querySelectorAll("button").forEach(btn => btn.addEventListener("click", this.handleClick));
+        this.sliderButtons.forEach(btn => btn.addEventListener("click", this.handleClick));
         this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
         this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
@@ -156,13 +164,13 @@ class Slider extends HTMLElement {
      * Create and populate an array with each slide's index, slideswrapper is offset left by one slide, this method makes the last slide first to counter the effect
      * @param slideList
      */
-    setInitialImageOrder(slideList: Element[]): number[] {
+    initSlidesFlexOrder(slideList: Element[]): number[] {
         return Array.from({length: slideList.length}, (el, i) => (i + 1) % slideList.length);
     }
 
     /**
      * Sets the targeted direction, adds CSS class for smooth transition and calls the scroll function
-     * @param e
+     * @param e Event
      */
     handleClick = (e: MouseEvent): void => {
         const button = e.currentTarget as HTMLButtonElement;

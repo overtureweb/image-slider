@@ -4,6 +4,7 @@ module.exports = (env) => {
 	return {
 		mode: env.mode || "development",
 		entry: './src/index.ts',
+		devtool: 'inline-source-map',
 		devServer: {
 			static: './dist',
 			port: 3000

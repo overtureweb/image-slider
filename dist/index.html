@@ -24,51 +24,49 @@
 <h1 class="text-center">May the Force Be With You</h1>
 <!--
     available settings via data-*:
-    max-width: string
-    num-slides: string
-    hide-controls: boolean in normal mode it advances one slide in either direction, crawl mode it changes the direction
-    autoplay: boolean advances once slide, touch events can change the direction no effect when in crawl mode
-    autoplay-interval (ms): no effect when in crawl mode default 2000ms
-    crawl-mode: moves left in a crawl style and disabled touch events
-    crawl-speed: (ms) speed of the crawl default 4000ms
-
+    max-width: (string) max width of the slider container in px, rem, vw or % (default is 100%)
+    num-slides: (number) number of whole slides to show at once (default is 3)
+    hide-controls: (boolean) advances one slide in either direction and sets a new direction, in crawl mode it only changes the direction (default false)
+    autoplay-mode: ("step" | "crawl") step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled (default undefined)
+    autoplay-step-timing: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 2000ms)
+    autoplay-crawl-timing: (number) when autoplay is in crawl mode, the time it takes for one slide to move off-screen (default 6000ms)
 -->
-<image-slider data-hide-controls="true" data-autoplay-mode="crawl" data-autoplay-step-timing="4000" data-max-width="720px" data-num-slides="4"></image-slider>
+<image-slider data-autoplay-crawl-timing="4000" data-autoplay-mode="crawl" data-max-width="720px" data-num-slides="3"></image-slider>
 <script type="application/json" id="images-map"> [
     {
-        "src": "/images/episode-i.jpg",
+        "src": "images/episode-i.jpg",
         "alt": "Star Wars Episode I The Phantom Menace"
     },
     {
-        "src": "/images/episode-ii.jpg",
+        "src": "images/episode-ii.jpg",
         "alt": "Star Wars Episode II: Attack of the Clones"
     },
     {
-        "src": "/images/episode-iii.jpg",
+        "src": "images/episode-iii.jpg",
         "alt": "Star Wars Episode III: Revenge of the Sith"
     },
     {
-        "src": "/images/episode-iv.jpg",
+        "src": "images/episode-iv.jpg",
         "alt": "Star Wars Episode IV: A New Hope"
     },
     {
-        "src": "/images/episode-v.jpg",
+        "src": "images/episode-v.jpg",
         "alt": "Star Wars Episode V: The Empire Strikes Back"
     },
     {
-        "src": "/images/episode-vi.jpg",
+        "src": "images/episode-vi.jpg",
         "alt": "Star Wars Episode VI: The Return of the Jedi"
     },
     {
-        "src": "/images/episode-vii.jpg",
+        "src": "images/episode-vii.jpg",
         "alt": "Star Wars Episode VII: The Force Awakens"
     },
     {
-        "src": "/images/episode-viii.jpg",
+        "src": "images/episode-viii.jpg",
         "alt": "Star Wars Episode VIII: The Last Jedi"
     },
     {
-        "src": "/images/episode-ix.jpg",
+        "src": "images/episode-ix.jpg",
         "alt": "Star Wars Episode IX: The Rise of Skywalker"
     }
 
