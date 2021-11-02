@@ -209,7 +209,6 @@ class Slider extends HTMLElement {
     handlePointerMove = (e: PointerEvent): void => {
         e.preventDefault();
         if (!this.isScrolling) return;
-        console.log(this.scrolled, e.clientX);
         this.scrolled = e.clientX - this.start;
         this.isSlidingLeft = this.scrolled < 0;
         this.slideX();
