@@ -1,12 +1,13 @@
 import css from "./slider-image.scss";
 import html from "./slider-image.html";
 
-type ImageMap = {
+type ImageData = {
     src: string;
     alt: string;
 }
 
 type UserSettings = {
+    imagesId: string | undefined;
     maxWidth?: string;
     numSlides: number;
     hideControls: boolean;
@@ -14,6 +15,9 @@ type UserSettings = {
     autoplayStepTiming: number;
     autoplayCrawlTiming: number;
 }
+
+const template = document.createElement("template");
+template.innerHTML = html;
 
 class Slider extends HTMLElement {
     // slider wrapper for the image slides
@@ -45,6 +49,7 @@ class Slider extends HTMLElement {
     // settings provided by the user via HTML data-* attributes
     // todo need to validate types and discard bad values maybe a UserSettings class for validation and type assertion
     settings: UserSettings = {
+        imagesId: undefined,
         autoplayStepTiming: 2000,
         autoplayCrawlTiming: 6000,
         numSlides: 3,
@@ -103,17 +108,18 @@ class Slider extends HTMLElement {
     }
 
     initSlides(): HTMLDivElement[] {
-        const imagesData: string | null | undefined = document.getElementById("images-map")?.textContent;
-        if (!imagesData) throw new Error("No images were provided.");
-        const imageMap: ImageMap[] = JSON.parse(imagesData);
+        if (typeof this.settings.imagesId !== "string") throw new Error("Web component requires a valid data-images-id attribute");
+        const imagesJSON: string = document.getElementById(this.settings.imagesId)?.textContent!;
+        if (!imagesJSON) throw new Error("No images were provided.");
+        const imagesArr: ImageData[] = JSON.parse(imagesJSON);
         const slides: HTMLDivElement[] = [];
 
-        for (let i = 0; i < imageMap.length; i++) {
+        for (let i = 0; i < imagesArr.length; i++) {
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
             const img: HTMLImageElement = document.createElement("img");
-            img.src = imageMap[i].src;
-            img.alt = imageMap[i].alt;
+            img.src = imagesArr[i].src;
+            img.alt = imagesArr[i].alt;
             img.onload = (() => {
                 img.width = img.naturalWidth;
                 img.height = img.naturalHeight;
@@ -121,7 +127,7 @@ class Slider extends HTMLElement {
             });
             slideWrapper.append(img);
             slides[i] = slideWrapper;
-            slides[i + imageMap.length] = slideWrapper.cloneNode(true) as HTMLDivElement;
+            slides[i + imagesArr.length] = slideWrapper.cloneNode(true) as HTMLDivElement;
         }
         return slides;
     }

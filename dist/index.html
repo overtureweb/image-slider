@@ -24,6 +24,7 @@
 <h1 class="text-center">May the Force Be With You</h1>
 <!--
     available settings via data-*:
+    data-images-id: (string) reference to the id of the script tag with the JSON image data *required
     max-width: (string) max width of the slider container in px, rem, vw or % (default is 100%)
     num-slides: (number) number of whole slides to show at once (default is 3)
     hide-controls: (boolean) advances one slide in either direction and sets a new direction, in crawl mode it only changes the direction (default false)
@@ -31,8 +32,10 @@
     autoplay-step-timing: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 2000ms)
     autoplay-crawl-timing: (number) when autoplay is in crawl mode, the time it takes for one slide to move off-screen (default 6000ms)
 -->
-<image-slider data-autoplay-crawl-timing="4000" data-autoplay-mode="crawl" data-max-width="720px" data-num-slides="3"></image-slider>
-<script type="application/json" id="images-map"> [
+<image-slider data-images-id="star-wars" data-autoplay-crawl-timing="4000" data-autoplay-mode="crawl" data-max-width="720px" data-num-slides="3">
+    <h1 slot="title">My Title</h1>
+    <h1 slot="title">My Title</h1></image-slider>
+<script type="application/json" id="star-wars"> [
     {
         "src": "images/episode-i.jpg",
         "alt": "Star Wars Episode I The Phantom Menace"
@@ -72,5 +75,6 @@
 
 ]</script>
 <script src="bundle.js"></script>
+
 </body>
 </html>
