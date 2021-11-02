@@ -32,48 +32,28 @@
     autoplay-step-timing: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 2000ms)
     autoplay-crawl-timing: (number) when autoplay is in crawl mode, the time it takes for one slide to move off-screen (default 6000ms)
 -->
-<image-slider data-images-id="star-wars" data-autoplay-crawl-timing="4000" data-autoplay-mode="crawl" data-max-width="720px" data-num-slides="3">
-    <h1 slot="title">My Title</h1>
-    <h1 slot="title">My Title</h1></image-slider>
-<script type="application/json" id="star-wars"> [
-    {
-        "src": "images/episode-i.jpg",
-        "alt": "Star Wars Episode I The Phantom Menace"
-    },
-    {
-        "src": "images/episode-ii.jpg",
-        "alt": "Star Wars Episode II: Attack of the Clones"
-    },
-    {
-        "src": "images/episode-iii.jpg",
-        "alt": "Star Wars Episode III: Revenge of the Sith"
-    },
-    {
-        "src": "images/episode-iv.jpg",
-        "alt": "Star Wars Episode IV: A New Hope"
-    },
-    {
-        "src": "images/episode-v.jpg",
-        "alt": "Star Wars Episode V: The Empire Strikes Back"
-    },
-    {
-        "src": "images/episode-vi.jpg",
-        "alt": "Star Wars Episode VI: The Return of the Jedi"
-    },
-    {
-        "src": "images/episode-vii.jpg",
-        "alt": "Star Wars Episode VII: The Force Awakens"
-    },
-    {
-        "src": "images/episode-viii.jpg",
-        "alt": "Star Wars Episode VIII: The Last Jedi"
-    },
-    {
-        "src": "images/episode-ix.jpg",
-        "alt": "Star Wars Episode IX: The Rise of Skywalker"
-    }
-
-]</script>
+<image-slider id="one" data-num-slides="8" data-autoplay-mode="crawl">
+    <img slot="slide" width="250" height="371" src="images/episode-i.jpg" alt="Star Wars Episode I The Phantom Menace"/>
+    <img slot="slide" width="250" height="371" src="images/episode-ii.jpg" alt="Star Wars Episode II: Attack of the Clones">
+    <img slot="slide" width="250" height="371" src="images/episode-iii.jpg" alt="Star Wars Episode III: Revenge of the Sith">
+    <img slot="slide" width="250" height="371" src="images/episode-iv.jpg" alt="Star Wars Episode IV A New Hope"/>
+    <img slot="slide" width="250" height="371" src="images/episode-v.jpg" alt="Star Wars Episode V: The Empire Strikes Back">
+    <img slot="slide" width="250" height="371" src="images/episode-vi.jpg" alt="Star Wars Episode VI: Return of the Jedi">
+    <img slot="slide" width="250" height="371" src="images/episode-vii.jpg" alt="Star Wars Episode VII The Force Awakens"/>
+    <img slot="slide" width="250" height="371" src="images/episode-viii.jpg" alt="Star Wars Episode VIII: The Last Jedi">
+    <img slot="slide" width="250" height="371" src="images/episode-ix.jpg" alt="Star Wars Episode IX: The Rise of Skywalker">
+</image-slider>
+<image-slider id="two" style="margin-top:100px;display: block" data-num-slides="8" data-autoplay-mode="crawl">
+    <img slot="slide" width="250" height="371" src="images/episode-i.jpg" alt="Star Wars Episode I The Phantom Menace"/>
+    <img slot="slide" width="250" height="371" src="images/episode-ii.jpg" alt="Star Wars Episode II: Attack of the Clones">
+    <img slot="slide" width="250" height="371" src="images/episode-iii.jpg" alt="Star Wars Episode III: Revenge of the Sith">
+    <img slot="slide" width="250" height="371" src="images/episode-iv.jpg" alt="Star Wars Episode IV A New Hope"/>
+    <img slot="slide" width="250" height="371" src="images/episode-v.jpg" alt="Star Wars Episode V: The Empire Strikes Back">
+    <img slot="slide" width="250" height="371" src="images/episode-vi.jpg" alt="Star Wars Episode VI: Return of the Jedi">
+    <img slot="slide" width="250" height="371" src="images/episode-vii.jpg" alt="Star Wars Episode VII The Force Awakens"/>
+    <img slot="slide" width="250" height="371" src="images/episode-viii.jpg" alt="Star Wars Episode VIII: The Last Jedi">
+    <img slot="slide" width="250" height="371" src="images/episode-ix.jpg" alt="Star Wars Episode IX: The Rise of Skywalker">
+</image-slider>
 <script src="bundle.js"></script>
 
 </body>

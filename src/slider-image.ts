@@ -1,11 +1,6 @@
 import css from "./slider-image.scss";
 import html from "./slider-image.html";
 
-type ImageData = {
-    src: string;
-    alt: string;
-}
-
 type UserSettings = {
     imagesId: string | undefined;
     maxWidth?: string;
@@ -81,8 +76,25 @@ class Slider extends HTMLElement {
             this.setEvents();
         } catch (error) {
             if (error instanceof Error)
-                console.log(error.message);
+                console.log(`Image Loading Error: ${error.message}`);
         }
+    }
+
+    initSlides(): HTMLDivElement[] {
+        const slot = document.createElement("slot");
+        slot.name = "slide";
+        this.shadowDOM.append(slot);
+        if (!slot.assignedNodes().length) throw new Error("No properly formatted images found")
+        const slides: HTMLDivElement[] = Array.from({length: slot.assignedNodes().length * 2});
+        for (let i = 0; i <= slides.length / 2 - 1; i++) {
+            let [image] = slot.assignedNodes();
+            const slideWrapper: HTMLDivElement = document.createElement("div");
+            slideWrapper.classList.add("slider__slide");
+            slideWrapper.append(image);
+            slides[i] = slideWrapper;
+            slides[i + slides.length / 2] = slideWrapper.cloneNode(true) as HTMLDivElement;
+        }
+        return slides;
     }
 
     initAutoPlay(settings: UserSettings) {
@@ -105,31 +117,6 @@ class Slider extends HTMLElement {
 
     clearAutoPlay(intervalID: NodeJS.Timer) {
         return clearInterval(intervalID);
-    }
-
-    initSlides(): HTMLDivElement[] {
-        if (typeof this.settings.imagesId !== "string") throw new Error("Web component requires a valid data-images-id attribute");
-        const imagesJSON: string = document.getElementById(this.settings.imagesId)?.textContent!;
-        if (!imagesJSON) throw new Error("No images were provided.");
-        const imagesArr: ImageData[] = JSON.parse(imagesJSON);
-        const slides: HTMLDivElement[] = [];
-
-        for (let i = 0; i < imagesArr.length; i++) {
-            const slideWrapper: HTMLDivElement = document.createElement("div");
-            slideWrapper.classList.add("slider__slide");
-            const img: HTMLImageElement = document.createElement("img");
-            img.src = imagesArr[i].src;
-            img.alt = imagesArr[i].alt;
-            img.onload = (() => {
-                img.width = img.naturalWidth;
-                img.height = img.naturalHeight;
-                this.slideWidthPx = this.slides[0].getBoundingClientRect().width;
-            });
-            slideWrapper.append(img);
-            slides[i] = slideWrapper;
-            slides[i + imagesArr.length] = slideWrapper.cloneNode(true) as HTMLDivElement;
-        }
-        return slides;
     }
 
     addStyleSheet(): void {
@@ -162,7 +149,10 @@ class Slider extends HTMLElement {
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
         this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
         this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
-        window.onload = this.autoplay;
+        window.addEventListener("load", () => {
+            this.slideWidthPx = this.slides[0].getBoundingClientRect().width;
+            this.autoplay();
+        })
         window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
     }
 
@@ -219,6 +209,7 @@ class Slider extends HTMLElement {
     handlePointerMove = (e: PointerEvent): void => {
         e.preventDefault();
         if (!this.isScrolling) return;
+        console.log(this.scrolled, e.clientX);
         this.scrolled = e.clientX - this.start;
         this.isSlidingLeft = this.scrolled < 0;
         this.slideX();
