@@ -9,7 +9,7 @@
     "build": "webpack --env mode=production",
     "start": "webpack serve --open"
   },
-  "author": "Alex Warner",
+  "author": "Overture Web Development LLC",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"

@@ -1,4 +1,6 @@
 const path = require('path');
+const WebpackObfuscator = require('webpack-obfuscator');
+
 
 module.exports = (env) => {
     return {
@@ -32,6 +34,6 @@ module.exports = (env) => {
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
-        },
+        }
     }
 };

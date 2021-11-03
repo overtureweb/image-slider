@@ -23,13 +23,17 @@
 <body class="m-0">
 <h1 class="text-center">May the Force Be With You</h1>
 <!--
+    styles:
     max-width: (boolean) when present allows css hook to max-width rule (default is 720px)
     num-slides: (boolean) when present allows css hook and is used to compute the number of slides to display (default is 3)
+    id: (optional)(string) to have multiple components on the page with different settings add the id attribute and reference it in the style tag
+
+    programmatic values:
     hide-controls: (boolean) advances one slide in either direction and sets a new direction, in crawl mode it only changes the direction (default false)
     auto-play-mode: ("step" | "crawl") step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled (default undefined)
     step-timing: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 3000ms), otherwise no effect
     crawl-timing: (number) when autoplay is in crawl mode, the time it takes for one slide to move off-screen (default 6000ms), otherwise no effect
-    id: to have multiple components on the page with different settings add the id attribute and reference it in the style tag
+    hidden: add to prevent FOUC, the attribute is removed when the component is loaded and rendered to the DOM
 -->
 
 <image-slider id="star_wars" max-width num-slides auto-play-mode="step" hidden>
