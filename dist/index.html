@@ -23,38 +23,66 @@
 <body class="m-0">
 <h1 class="text-center">May the Force Be With You</h1>
 <!--
-    available settings via data-*:
-    data-images-id: (string) reference to the id of the script tag with the JSON image data *required
-    max-width: (string) max width of the slider container in px, rem, vw or % (default is 100%)
-    num-slides: (number) number of whole slides to show at once (default is 3)
+    max-width: (boolean) when present allows css hook to max-width rule (default is 720px)
+    num-slides: (boolean) when present allows css hook and is used to compute the number of slides to display (default is 3)
     hide-controls: (boolean) advances one slide in either direction and sets a new direction, in crawl mode it only changes the direction (default false)
-    autoplay-mode: ("step" | "crawl") step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled (default undefined)
-    autoplay-step-timing: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 2000ms)
-    autoplay-crawl-timing: (number) when autoplay is in crawl mode, the time it takes for one slide to move off-screen (default 6000ms)
+    auto-play-mode: ("step" | "crawl") step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled (default undefined)
+    step-timing: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 3000ms), otherwise no effect
+    crawl-timing: (number) when autoplay is in crawl mode, the time it takes for one slide to move off-screen (default 6000ms), otherwise no effect
+    id: to have multiple components on the page with different settings add the id attribute and reference it in the style tag
 -->
-<image-slider data-num-slides="4" data-autoplay-mode="step">
-    <img slot="slide" width="250" height="371" src="images/episode-i.jpg" alt="Star Wars Episode I The Phantom Menace"/>
-    <img slot="slide" width="250" height="371" src="images/episode-ii.jpg" alt="Star Wars Episode II: Attack of the Clones">
-    <img slot="slide" width="250" height="371" src="images/episode-iii.jpg" alt="Star Wars Episode III: Revenge of the Sith">
-    <img slot="slide" width="250" height="371" src="images/episode-iv.jpg" alt="Star Wars Episode IV A New Hope"/>
-    <img slot="slide" width="250" height="371" src="images/episode-v.jpg" alt="Star Wars Episode V: The Empire Strikes Back">
-    <img slot="slide" width="250" height="371" src="images/episode-vi.jpg" alt="Star Wars Episode VI: Return of the Jedi">
-    <img slot="slide" width="250" height="371" src="images/episode-vii.jpg" alt="Star Wars Episode VII The Force Awakens"/>
-    <img slot="slide" width="250" height="371" src="images/episode-viii.jpg" alt="Star Wars Episode VIII: The Last Jedi">
-    <img slot="slide" width="250" height="371" src="images/episode-ix.jpg" alt="Star Wars Episode IX: The Rise of Skywalker">
+
+<image-slider id="star_wars" max-width num-slides auto-play-mode="step" hidden>
+    <style>
+        image-slider#star_wars {
+            --max-width: 1500px;
+            --num-slides: 8;
+        }
+    </style>
+    <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
+         alt="Star Wars Episode I The Phantom Menace"/>
+    <img slot="slide" width="250" height="371" src="images/sw/episode-ii.jpg"
+         alt="Star Wars Episode II: Attack of the Clones">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-iii.jpg"
+         alt="Star Wars Episode III: Revenge of the Sith">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-iv.jpg"
+         alt="Star Wars Episode IV A New Hope"/>
+    <img slot="slide" width="250" height="371" src="images/sw/episode-v.jpg"
+         alt="Star Wars Episode V: The Empire Strikes Back">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-vi.jpg"
+         alt="Star Wars Episode VI: Return of the Jedi">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-vii.jpg"
+         alt="Star Wars Episode VII The Force Awakens"/>
+    <img slot="slide" width="250" height="371" src="images/sw/episode-viii.jpg"
+         alt="Star Wars Episode VIII: The Last Jedi">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-ix.jpg"
+         alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
-<image-slider style="margin-top:100px;display: block" data-num-slides="4" data-autoplay-mode="crawl">
-    <img slot="slide" width="250" height="371" src="images/episode-i.jpg" alt="Star Wars Episode I The Phantom Menace"/>
-    <img slot="slide" width="250" height="371" src="images/episode-ii.jpg" alt="Star Wars Episode II: Attack of the Clones">
-    <img slot="slide" width="250" height="371" src="images/episode-iii.jpg" alt="Star Wars Episode III: Revenge of the Sith">
-    <img slot="slide" width="250" height="371" src="images/episode-iv.jpg" alt="Star Wars Episode IV A New Hope"/>
-    <img slot="slide" width="250" height="371" src="images/episode-v.jpg" alt="Star Wars Episode V: The Empire Strikes Back">
-    <img slot="slide" width="250" height="371" src="images/episode-vi.jpg" alt="Star Wars Episode VI: Return of the Jedi">
-    <img slot="slide" width="250" height="371" src="images/episode-vii.jpg" alt="Star Wars Episode VII The Force Awakens"/>
-    <img slot="slide" width="250" height="371" src="images/episode-viii.jpg" alt="Star Wars Episode VIII: The Last Jedi">
-    <img slot="slide" width="250" height="371" src="images/episode-ix.jpg" alt="Star Wars Episode IX: The Rise of Skywalker">
+<image-slider id="harry_potter" max-width num-slides auto-play-mode="step" hidden>
+    <style>
+        image-slider#harry_potter {
+            --max-width: 1500px;
+            --num-slides: 8;
+            margin-top: 50px;
+        }
+    </style>
+    <img slot="slide" width="250" height="371" src="images/hp/hp-1.jpg"
+         alt="Harry Potter and the Sorcerer's Stone"/>
+    <img slot="slide" width="250" height="371" src="images/hp/hp-2.jpg"
+         alt="Star Wars Episode II: Attack of the Clones">
+    <img slot="slide" width="250" height="371" src="images/hp/hp-3.jpg"
+         alt="Star Wars Episode III: Revenge of the Sith">
+    <img slot="slide" width="250" height="371" src="images/hp/hp-4.jpg"
+         alt="Star Wars Episode IV A New Hope"/>
+    <img slot="slide" width="250" height="371" src="images/hp/hp-5.jpg"
+         alt="Star Wars Episode V: The Empire Strikes Back">
+    <img slot="slide" width="250" height="371" src="images/hp/hp-6.jpg"
+         alt="Star Wars Episode VI: Return of the Jedi">
+    <img slot="slide" width="250" height="371" src="images/hp/hp-7.jpg"
+         alt="Star Wars Episode VII The Force Awakens"/>
+    <img slot="slide" width="250" height="371" src="images/hp/hp-8.jpg"
+         alt="Star Wars Episode VIII: The Last Jedi">
 </image-slider>
 <script src="bundle.js"></script>
-
 </body>
 </html>

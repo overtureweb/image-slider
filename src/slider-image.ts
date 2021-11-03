@@ -1,16 +1,6 @@
 import css from "./slider-image.scss";
 import html from "./slider-image.html";
 
-type UserSettings = {
-    imagesId: string | undefined;
-    maxWidth?: string;
-    numSlides: number;
-    hideControls: boolean;
-    autoplayMode?: string;
-    autoplayStepTiming: number;
-    autoplayCrawlTiming: number;
-}
-
 const template = document.createElement("template");
 template.innerHTML = html;
 
@@ -22,7 +12,7 @@ class Slider extends HTMLElement {
     slides: HTMLDivElement[] = [];
 
     // current flex order of the image slides
-    imageOrder: number[] = []
+    imageOrder: number[] = [];
 
     // is slider moving left?
     isSlidingLeft: boolean = true;
@@ -41,30 +31,21 @@ class Slider extends HTMLElement {
 
     shadowDOM: ShadowRoot;
 
-    // settings provided by the user via HTML data-* attributes
-    // todo need to validate types and discard bad values maybe a UserSettings class for validation and type assertion
-    settings: UserSettings = {
-        imagesId: undefined,
-        autoplayStepTiming: 2000,
-        autoplayCrawlTiming: 6000,
-        numSlides: 3,
-        hideControls: false
-    };
+    stylesheet: CSSStyleSheet;
 
     // autoplay function is
     autoplay: () => NodeJS.Timer | void = () => {
     };
-    autoPlayIntervalID: NodeJS.Timer | any;
+    autoPlayIntervalID?: NodeJS.Timer | any;
 
     sliderButtons: NodeListOf<HTMLButtonElement>;
 
     constructor() {
         super();
-        this.settings = {...this.settings, ...this.dataset};
         this.attachShadow({mode: "open"});
         this.shadowDOM = this.shadowRoot as ShadowRoot;
-        this.shadowDOM.innerHTML = html;
-        this.addStyleSheet();
+        this.shadowDOM.appendChild(template.content.cloneNode(true));
+        this.stylesheet = this.addStyleSheet();
         this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
         this.sliderButtons = this.shadowDOM.querySelectorAll("button");
         try {
@@ -73,11 +54,16 @@ class Slider extends HTMLElement {
             this.imageOrder = this.initSlidesFlexOrder(this.slides);
             this.setSlidesFlexOrder();
             this.handleUserSettings();
-            this.setEvents();
         } catch (error) {
-            if (error instanceof Error)
+            if (error instanceof Error) {
                 console.log(`Image Loading Error: ${error.message}`);
+            }
         }
+    }
+
+    connectedCallback() {
+        this.setEvents();
+        this.hidden = false;
     }
 
     initSlides(): HTMLDivElement[] {
@@ -97,47 +83,48 @@ class Slider extends HTMLElement {
         return slides;
     }
 
-    initAutoPlay(settings: UserSettings) {
-        const {autoplayMode: mode, autoplayStepTiming: interval} = settings;
-        const [leftBtn, rightBtn] = this.sliderButtons
+    initAutoPlay() {
+        const mode = this.getAttribute("auto-play-mode");
+        const [leftBtn, rightBtn] = this.sliderButtons;
         return () => {
             switch (mode) {
                 case "crawl":
                     this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
                     this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
                     this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
-                    return this.isSlidingLeft ? leftBtn.click() : rightBtn?.click();
+                    const crawlTiming = this.getAttribute("crawl-timing")
+                    const DEFAULT_CRAWLTIMING = 6000;
+                    this.stylesheet.insertRule(`.slider__slides.slide-image{--transition-speed:${crawlTiming || DEFAULT_CRAWLTIMING}ms`, this.stylesheet.cssRules.length);
+                    this.stylesheet.insertRule(`.slider:hover{cursor:default}`, this.stylesheet.cssRules.length);
+                    return this.isSlidingLeft ? leftBtn.click() : rightBtn.click();
                 case "step":
-                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn?.click(), interval)
+                    if (this.autoPlayIntervalID) return;
+                    const interval = this.getAttribute("step-timing");
+                    const DEFAULT_INTERVAL = 3000;
+                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn.click(), Number(interval) || DEFAULT_INTERVAL);
                 default:
                     break;
             }
         }
     }
 
-    clearAutoPlay(intervalID: NodeJS.Timer) {
-        return clearInterval(intervalID);
+    disableStepInterval() {
+        clearInterval(this.autoPlayIntervalID);
+        this.autoPlayIntervalID = null;
     }
 
-    addStyleSheet(): void {
+    addStyleSheet(): CSSStyleSheet {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
         this.shadowDOM.append(styles);
+        return styles.sheet!;
     }
 
     handleUserSettings(): void {
-        this.autoplay = this.initAutoPlay(this.settings);
-        const styleEl: HTMLStyleElement = document.createElement("style");
-        this.shadowDOM.append(styleEl);
-        const stylesheet: CSSStyleSheet | null = styleEl.sheet;
-        this.settings.maxWidth && stylesheet?.insertRule(`.slider{--max-width:${this.settings.maxWidth}}`);
-        this.settings.numSlides && stylesheet?.insertRule(`.slider{--slide-width:${Math.floor(100 / +this.settings.numSlides * .95)}%}`);
-        this.settings.hideControls && this.sliderButtons.forEach(btn => btn.hidden = true);
-        if (this.settings.autoplayMode === "crawl") {
-            stylesheet?.insertRule(`.slider__slides.slide-image{--transition-speed:${this.settings.autoplayCrawlTiming}ms`);
-            stylesheet?.insertRule(`.slider:hover{cursor:default}`);
-        }
+        this.autoplay = this.initAutoPlay();
+        this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
     }
+
 
     /**
      * Set all the event listeners
@@ -152,7 +139,7 @@ class Slider extends HTMLElement {
         window.addEventListener("load", () => {
             this.slideWidthPx = this.slides[0].getBoundingClientRect().width;
             this.autoplay();
-        })
+        });
         window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
     }
 
@@ -162,6 +149,26 @@ class Slider extends HTMLElement {
      */
     initSlidesFlexOrder(slideList: Element[]): number[] {
         return Array.from({length: slideList.length}, (el, i) => (i + 1) % slideList.length);
+    }
+
+    /**
+     * called as either the transitionend handler or manually when this.scrolled / this.imageWidth > 1
+     */
+    reorderSlides = (): void | number => {
+        this.slidesWrapper.classList.remove("slide-image");
+        if (Math.abs(this.scrolled) > 0) return (this.scrolled = 0);
+        // using length prevents a negative number in the subsequent modulo call
+        let offset = this.isSlidingLeft ? this.slides.length - 1 : 1;
+        this.setSlidesFlexOrder(offset);
+        this.slideReset();
+        setTimeout(() => this.autoplay(), 0);
+    };
+
+    setSlidesFlexOrder(offset: number = 0): void {
+        this.slides.forEach((slide, i) => {
+            this.imageOrder[i] = (this.imageOrder[i] + offset) % this.slides.length;
+            slide.style.order = this.imageOrder[i].toString();
+        });
     }
 
     /**
@@ -175,26 +182,6 @@ class Slider extends HTMLElement {
         this.slideX();
     };
 
-    /**
-     * called as either the transitionend handler or manually when this.scrolled / this.imageWidth > 1
-     */
-    reorderSlides = (): void | number => {
-        this.slidesWrapper.classList.remove("slide-image");
-        if (Math.abs(this.scrolled) > 0) return (this.scrolled = 0);
-        // using length prevents a negative number in the subsequent modulo call
-        let offset = this.isSlidingLeft ? this.slides.length - 1 : 1;
-        this.setSlidesFlexOrder(offset);
-        this.slideReset();
-        this.settings.autoplayMode === "crawl" && setTimeout(() => this.autoplay());
-    };
-
-    setSlidesFlexOrder(offset: number = 0): void {
-        this.slides.forEach((slide, i) => {
-            this.imageOrder[i] = (this.imageOrder[i] + offset) % this.slides.length;
-            slide.style.order = this.imageOrder[i].toString();
-        });
-    }
-
     handlePointerDown = (e: PointerEvent): void => {
         e.preventDefault();
         const currentTarget = e.currentTarget as HTMLDivElement;
@@ -203,7 +190,7 @@ class Slider extends HTMLElement {
         currentTarget.style.cursor = "grabbing";
         this.isScrolling = true;
         this.start = e.clientX;
-        this.clearAutoPlay(this.autoPlayIntervalID);
+        this.disableStepInterval();
     };
 
     handlePointerMove = (e: PointerEvent): void => {

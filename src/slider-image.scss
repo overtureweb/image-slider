@@ -1,7 +1,22 @@
+:host {
+  display: block;
+  --slide-width: calc(100 / 3 * .95%);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([max-width]) {
+  --max-width: var(--max-width);
+}
+
+:host([num-slides]) {
+  --slide-width: calc(100 / var(--num-slides, 3) * .95%);
+}
+
 .slider {
-  --slide-width: 31.35%; // divide 100 by # of slides and subtract 5%
-  --max-width: 100%;
-  max-width: var(--max-width);
+  max-width: var(--max-width, 720px);
   overflow: hidden;
   margin: 0 auto;
   touch-action: none;
@@ -17,10 +32,12 @@
     display: flex;
     position: relative;
     left: calc(var(--slide-width) * -1);
+
     &.slide-image {
       --transition-speed: .5s;
       transition: transform var(--transition-speed) cubic-bezier(0, 0, 1, 1);
     }
+
     &:after {
       content: '';
       position: absolute;
@@ -34,8 +51,6 @@
     flex: 0 0 var(--slide-width); // the flex basis value is equal to the inverse of the left value above
     padding-right: .5rem;
     box-sizing: border-box;
-    display: grid;
-    place-content: center;
 
     img {
       width: 100%;
@@ -58,9 +73,11 @@
     font-size: 1rem;
     transition: all 0.25s ease;
     position: absolute;
+
     &.left {
       left: 5px;
     }
+
     &.right {
       right: 5px;
     }
