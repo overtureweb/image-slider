@@ -36,11 +36,11 @@
     transitionspeed (number) should be <= steptiming (default 500ms)
 -->
 
-<image-slider id="star_wars" numslides maxwidth autoplay-mode="step" hidden>
+<image-slider id="star_wars" numslides maxwidth hidden>
     <style>
         image-slider#star_wars {
-            --numslides: 7;
-            --maxwidth: 100%;
+            --numslides: 8;
+            --maxwidth: 1500px;
         }
     </style>
     <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
@@ -62,11 +62,11 @@
     <img slot="slide" width="250" height="371" src="images/sw/episode-ix.jpg"
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
-<image-slider id="harry_potter" maxwidth numslides autoplay-mode="crawl" hidecontrols hidden>
+<image-slider id="harry_potter" maxwidth numslides autoplay-mode="step" hidden>
     <style>
         image-slider#harry_potter {
-            --maxwidth: 100%;
-            --numslides: 7;
+            --maxwidth: 1500px;
+            --numslides: 8;
             margin-top: 50px;
         }
     </style>

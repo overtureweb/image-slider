@@ -91,12 +91,12 @@ class Slider extends HTMLElement {
                     this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
                     this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
                     this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
-                    return fireClick();
+                    return this.isSlidingLeft ? leftBtn.click() : rightBtn.click();
                 case "step":
                     if (this.autoPlayIntervalID) return;
                     const interval = this.getAttribute("stepinterval");
                     const DEFAULT_INTERVAL = 3000;
-                    return this.autoPlayIntervalID = setInterval(fireClick, Number(interval) || DEFAULT_INTERVAL);
+                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn.click(), Number(interval) || DEFAULT_INTERVAL);
                 default:
                     break;
             }
@@ -193,12 +193,13 @@ class Slider extends HTMLElement {
         if (!this.isScrolling) return;
         this.scrolled = e.clientX - this.start;
         this.isSlidingLeft = this.scrolled < 0;
+        this.slideX(); // important - this has to be called before reorderSlides to prevent a flicker
         if (Math.abs(this.scrolled / this.slideWidthPx) > 1) {
             this.scrolled = 0;
             this.reorderSlides();
             this.start = e.clientX;
         }
-        this.slideX();
+
     };
 
     handlePointerUp = (e: PointerEvent): void => {
@@ -226,4 +227,3 @@ class Slider extends HTMLElement {
 }
 
 export default Slider;
-
