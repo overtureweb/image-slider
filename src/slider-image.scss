@@ -1,22 +1,33 @@
 :host {
   display: block;
   --slide-width: calc(100 / 3 * .95%);
+  --transition-speed: 500ms;
+  --max-width: 720px;
 }
 
 :host([hidden]) {
   display: none;
 }
 
-:host([max-width]) {
-  --max-width: var(--max-width);
+:host([maxwidth]) {
+  --max-width: var(--maxwidth);
 }
 
-:host([num-slides]) {
-  --slide-width: calc(100 / var(--num-slides, 3) * .95%);
+:host([numslides]) {
+  --slide-width: calc(100 / var(--numslides, 3) * .95%);
+}
+
+:host([autoplay-mode=crawl]) {
+  --cursor: default;
+  --transition-speed: 6000ms;
+}
+
+:host([transitionspeed]) {
+  --transition-speed: var(--transitionspeed);
 }
 
 .slider {
-  max-width: var(--max-width, 720px);
+  max-width: var(--max-width);
   overflow: hidden;
   margin: 0 auto;
   touch-action: none;
@@ -25,7 +36,7 @@
   position: relative;
 
   &:hover {
-    cursor: grab;
+    cursor: var(--cursor, grab);
   }
 
   &__slides {
@@ -34,7 +45,6 @@
     left: calc(var(--slide-width) * -1);
 
     &.slide-image {
-      --transition-speed: .5s;
       transition: transform var(--transition-speed) cubic-bezier(0, 0, 1, 1);
     }
 
@@ -51,6 +61,8 @@
     flex: 0 0 var(--slide-width); // the flex basis value is equal to the inverse of the left value above
     padding-right: .5rem;
     box-sizing: border-box;
+    -webkit-transform:translate3d(0,0,0);
+
 
     img {
       width: 100%;

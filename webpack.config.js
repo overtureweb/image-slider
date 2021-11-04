@@ -1,12 +1,10 @@
 const path = require('path');
-const WebpackObfuscator = require('webpack-obfuscator');
-
 
 module.exports = (env) => {
     return {
         mode: env.mode || "development",
         entry: './src/index.ts',
-        devtool: 'inline-source-map' && env.mode !== "production",
+        devtool: !env.mode && 'inline-source-map',
         devServer: {
             static: './dist',
             port: 3000
