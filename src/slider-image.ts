@@ -14,8 +14,8 @@ class Slider extends HTMLElement {
     // current flex order of the image slides
     imageOrder: number[] = [];
 
-    // is slider moving left?
-    isSlidingLeft: boolean = true;
+    // is the first/most recent transition direction left?
+    isDirectionLeft: boolean = true;
 
     // is a pointer event in progress
     isScrolling: boolean = false;
@@ -83,20 +83,18 @@ class Slider extends HTMLElement {
 
     initAutoPlay() {
         const mode = this.getAttribute("autoplay-mode");
-        const [leftBtn, rightBtn] = this.sliderButtons;
-        const fireClick = () => this.isSlidingLeft ? leftBtn.click() : rightBtn.click();
         return () => {
             switch (mode) {
                 case "crawl":
                     this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
                     this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
                     this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
-                    return this.isSlidingLeft ? leftBtn.click() : rightBtn.click();
+                    return this.doTransition();
                 case "step":
                     if (this.autoPlayIntervalID) return;
                     const interval = this.getAttribute("stepinterval");
                     const DEFAULT_INTERVAL = 3000;
-                    return this.autoPlayIntervalID = setInterval(() => this.isSlidingLeft ? leftBtn.click() : rightBtn.click(), Number(interval) || DEFAULT_INTERVAL);
+                    return this.autoPlayIntervalID = setInterval(() => this.doTransition(), Number(interval) || DEFAULT_INTERVAL);
                 default:
                     break;
             }
@@ -152,9 +150,9 @@ class Slider extends HTMLElement {
         this.slidesWrapper.classList.remove("slide-image");
         if (Math.abs(this.scrolled) > 0) return (this.scrolled = 0);
         // using length prevents a negative number in the subsequent modulo call
-        let offset = this.isSlidingLeft ? this.slides.length - 1 : 1;
+        let offset = this.isDirectionLeft ? this.slides.length - 1 : 1;
         this.setSlidesFlexOrder(offset);
-        this.slideReset();
+        this.slideToZero();
         setTimeout(() => this.autoplay(), 0);
     };
 
@@ -171,10 +169,14 @@ class Slider extends HTMLElement {
      */
     handleClick = (e: MouseEvent): void => {
         const button = e.currentTarget as HTMLButtonElement;
-        this.isSlidingLeft = button.classList.contains("left");
+        this.isDirectionLeft = button.classList.contains("left");
+        this.doTransition();
+    };
+
+    doTransition() {
         this.slidesWrapper.classList.add("slide-image");
         this.slideX();
-    };
+    }
 
     handlePointerDown = (e: PointerEvent): void => {
         e.preventDefault();
@@ -192,14 +194,13 @@ class Slider extends HTMLElement {
         e.preventDefault();
         if (!this.isScrolling) return;
         this.scrolled = e.clientX - this.start;
-        this.isSlidingLeft = this.scrolled < 0;
+        this.isDirectionLeft = this.scrolled < 0;
         this.slideX(); // important - this has to be called before reorderSlides to prevent a flicker
         if (Math.abs(this.scrolled / this.slideWidthPx) > 1) {
             this.scrolled = 0;
             this.reorderSlides();
             this.start = e.clientX;
         }
-
     };
 
     handlePointerUp = (e: PointerEvent): void => {
@@ -209,7 +210,7 @@ class Slider extends HTMLElement {
             this.scrolled = 0;
             this.slideX();
         } else {
-            this.slideReset();
+            this.slideToZero();
         }
         this.isScrolling = false;
         this.autoplay();
@@ -218,12 +219,12 @@ class Slider extends HTMLElement {
     /**
      * Apply translateX by either the amount scrolled by the user or, if this.scrolled = 0 (falsy when click event or during pointerup) by the current width of a slide
      */
-    slideX = (): string => this.slidesWrapper.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isSlidingLeft ? -1 : 1) * this.slideWidthPx}px)`;
+    slideX = (): string => this.slidesWrapper.style.transform = this.scrolled ? `translateX(${this.scrolled}px)` : `translateX(${(this.isDirectionLeft ? -1 : 1) * this.slideWidthPx}px)`;
 
     /**
      * TranslateX back to zero
      */
-    slideReset = (): string => this.slidesWrapper.style.transform = "translateX(0)";
+    slideToZero = (): string => this.slidesWrapper.style.transform = "translateX(0)";
 }
 
 export default Slider;
