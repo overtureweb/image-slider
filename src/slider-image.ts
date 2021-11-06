@@ -61,7 +61,6 @@ class Slider extends HTMLElement {
 
     connectedCallback() {
         this.setEvents();
-        this.hidden = false;
     }
 
     initSlides(): HTMLDivElement[] {
@@ -71,7 +70,8 @@ class Slider extends HTMLElement {
         if (!slot.assignedNodes().length) throw new Error("No properly formatted images found")
         const slides: HTMLDivElement[] = Array.from({length: slot.assignedNodes().length * 2});
         for (let i = 0; i < slides.length / 2; i++) {
-            let [image] = slot.assignedNodes();
+            let [image] = slot.assignedNodes() as HTMLImageElement[];
+            image.hidden = false;
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
             slideWrapper.append(image);
