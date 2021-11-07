@@ -23,79 +23,68 @@
 <body class="m-0">
 <h1 class="text-center">May the Force Be With You</h1>
 <!--
-    styles:
-    maxwidth: (boolean) when present allows css hook to max-width rule (default is 720px)
-    numslides: (boolean) when present allows css hook and is used to compute the number of slides to display (default is 3)
-    id: (optional)(string) to have multiple components on the page with different settings add the id attribute and reference it in the style tag
-
-    programmatic values:
-    hidecontrols: (boolean) advances one slide in either direction and sets a new direction, in crawl mode it only changes the direction (default false)
-    autoplay-mode: ("step" | "crawl") step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled (default undefined)
-    stepinterval: (number) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 3000ms), otherwise no effect
-    hidden: add to prevent FOUC, the attribute is removed when the component is loaded and rendered to the DOM
-    transitionspeed (number) should be <= steptiming (default 500ms)
+    attributes:
+    max-width: (string, default 100%) number px|rem|em|%|vw
+    num-slides: (number, default: 3) used to compute the number of slides to display
+    hide-controls: (boolean) when true will hide the side buttons
+    autoplay-mode: ("step" | "crawl", default: undefined) step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled
+    step-interval: (number, default 3000, requires autoplay-mode = step) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 3000ms)
+    transition-speed (number, default 500) should be <= steptiming (default 500ms)
+    crawl-speed (number, default 6000 requires autoplay-mode = crawl) when autoplay is in crawl mode, the time in milliseconds to scroll one slide
 -->
 
-<image-slider id="star_wars" numslides maxwidth>
+<image-slider autoplay-mode="crawl" num-slides="6">
     <style>
-        image-slider#star_wars {
-            --numslides: 8;
-            --maxwidth: 1500px;
-
+        image-slider {
+            transition: opacity .250s ease;
         }
-        /*image-slider {*/
-        /*    transition: opacity .250s ease;*/
-        /*}*/
 
-        /*image-slider:not(:defined) {*/
-        /*    opacity: 0;*/
-        /*}*/
+        image-slider:not(:defined) {
+            opacity: 0;
+        }
     </style>
-    <p style="display:grid;place-content:center">Loading...</p>
     <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
-         alt="Star Wars Episode I The Phantom Menace" hidden>
+         alt="Star Wars Episode I The Phantom Menace">
     <img slot="slide" width="250" height="371" src="images/sw/episode-ii.jpg"
-         alt="Star Wars Episode II: Attack of the Clones" hidden>
+         alt="Star Wars Episode II: Attack of the Clones">
     <img slot="slide" width="250" height="371" src="images/sw/episode-iii.jpg"
-         alt="Star Wars Episode III: Revenge of the Sith" hidden>
+         alt="Star Wars Episode III: Revenge of the Sith">
     <img slot="slide" width="250" height="371" src="images/sw/episode-iv.jpg"
-         alt="Star Wars Episode IV A New Hope" hidden>
+         alt="Star Wars Episode IV A New Hope">
     <img slot="slide" width="250" height="371" src="images/sw/episode-v.jpg"
-         alt="Star Wars Episode V: The Empire Strikes Back" hidden>
+         alt="Star Wars Episode V: The Empire Strikes Back">
     <img slot="slide" width="250" height="371" src="images/sw/episode-vi.jpg"
-         alt="Star Wars Episode VI: Return of the Jedi" hidden>
+         alt="Star Wars Episode VI: Return of the Jedi">
     <img slot="slide" width="250" height="371" src="images/sw/episode-vii.jpg"
-         alt="Star Wars Episode VII The Force Awakens" hidden>
+         alt="Star Wars Episode VII The Force Awakens">
     <img slot="slide" width="250" height="371" src="images/sw/episode-viii.jpg"
-         alt="Star Wars Episode VIII: The Last Jedi" hidden>
+         alt="Star Wars Episode VIII: The Last Jedi">
     <img slot="slide" width="250" height="371" src="images/sw/episode-ix.jpg"
-         alt="Star Wars Episode IX: The Rise of Skywalker" hidden>
+         alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
-<image-slider id="harry_potter" maxwidth numslides autoplay-mode="step">
+<image-slider autoplay-mode="step" num-slides="6">
     <style>
-        image-slider#harry_potter {
-            --maxwidth: 1500px;
-            --numslides: 8;
+        image-slider:nth-of-type(2) {
             margin-top: 50px;
         }
     </style>
     <p style="display:grid;place-content:center">Loading...</p>
     <img slot="slide" width="250" height="371" src="images/hp/hp-1.jpg"
-         alt="Harry Potter and the Sorcerer's Stone" hidden>
+         alt="Harry Potter and the Sorcerer's Stone">
     <img slot="slide" width="250" height="371" src="images/hp/hp-2.jpg"
-         alt="Harry Potter and the Chamber of Secrets" hidden>
+         alt="Harry Potter and the Chamber of Secrets">
     <img slot="slide" width="250" height="371" src="images/hp/hp-3.jpg"
-         alt="Harry Potter and the Prisoner of Azkaban" hidden>
+         alt="Harry Potter and the Prisoner of Azkaban">
     <img slot="slide" width="250" height="371" src="images/hp/hp-4.jpg"
-         alt="Harry Potter and the Goblet of Fire" hidden>
+         alt="Harry Potter and the Goblet of Fire">
     <img slot="slide" width="250" height="371" src="images/hp/hp-5.jpg"
-         alt="Harry Potter and the Order of the Phoenix" hidden>
+         alt="Harry Potter and the Order of the Phoenix">
     <img slot="slide" width="250" height="371" src="images/hp/hp-6.jpg"
-         alt="Harry Potter and the Half-Blood Prince" hidden>
+         alt="Harry Potter and the Half-Blood Prince">
     <img slot="slide" width="250" height="371" src="images/hp/hp-7.jpg"
-         alt="Harry Potter and the Deathly Hallows Part I" hidden>
+         alt="Harry Potter and the Deathly Hallows Part I">
     <img slot="slide" width="250" height="371" src="images/hp/hp-8.jpg"
-         alt="Harry Potter and the Deathly Hallows Part II" hidden>
+         alt="Harry Potter and the Deathly Hallows Part II">
 </image-slider>
 <script src="bundle.js"></script>
 </body>

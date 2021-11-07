@@ -2,28 +2,16 @@
   display: block;
   --slide-width: calc(100 / 3 * .95%);
   --transition-speed: 500ms;
-  --max-width: 720px;
+  --max-width: 100%;
 }
 
 :host([hidden]) {
   display: none;
 }
 
-:host([maxwidth]) {
-  --max-width: var(--maxwidth);
-}
-
-:host([numslides]) {
-  --slide-width: calc(100 / var(--numslides, 3) * .95%);
-}
-
 :host([autoplay-mode=crawl]) {
   --cursor: default;
   --transition-speed: 6000ms;
-}
-
-:host([transitionspeed]) {
-  --transition-speed: var(--transitionspeed);
 }
 
 .slider {
@@ -62,7 +50,6 @@
     padding-right: .5rem;
     box-sizing: border-box;
     -webkit-transform:translate3d(0,0,0);
-
 
     img {
       width: 100%;

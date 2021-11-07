@@ -38,12 +38,14 @@ class Slider extends HTMLElement {
 
     sliderButtons: NodeListOf<HTMLButtonElement>;
 
+    stylesheet: CSSStyleSheet;
+
     constructor() {
         super();
         this.attachShadow({mode: "open"});
         this.shadowDOM = this.shadowRoot as ShadowRoot;
         this.shadowDOM.appendChild(template.content.cloneNode(true));
-        this.addStyleSheet();
+        this.stylesheet = this.addStyleSheet();
         this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
         this.sliderButtons = this.shadowDOM.querySelectorAll("button");
         try {
@@ -71,7 +73,6 @@ class Slider extends HTMLElement {
         const slides: HTMLDivElement[] = Array.from({length: slot.assignedNodes().length * 2});
         for (let i = 0; i < slides.length / 2; i++) {
             let [image] = slot.assignedNodes() as HTMLImageElement[];
-            image.hidden = false;
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
             slideWrapper.append(image);
@@ -81,8 +82,7 @@ class Slider extends HTMLElement {
         return slides;
     }
 
-    initAutoPlay() {
-        const mode = this.getAttribute("autoplay-mode");
+    initAutoPlay(stepInterval: number = 3000, mode?: string) {
         return () => {
             switch (mode) {
                 case "crawl":
@@ -92,9 +92,7 @@ class Slider extends HTMLElement {
                     return this.doTransition();
                 case "step":
                     if (this.autoPlayIntervalID) return;
-                    const interval = this.getAttribute("stepinterval");
-                    const DEFAULT_INTERVAL = 3000;
-                    return this.autoPlayIntervalID = setInterval(() => this.doTransition(), Number(interval) || DEFAULT_INTERVAL);
+                    return this.autoPlayIntervalID = setInterval(() => this.doTransition(), stepInterval);
                 default:
                     break;
             }
@@ -106,15 +104,44 @@ class Slider extends HTMLElement {
         this.autoPlayIntervalID = null;
     }
 
-    addStyleSheet(): void {
+    addStyleSheet(): CSSStyleSheet {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
         this.shadowDOM.append(styles);
+        return styles.sheet!;
     }
 
     handleUserSettings(): void {
-        this.autoplay = this.initAutoPlay();
-        this.hasAttribute("hidecontrols") && this.sliderButtons.forEach(btn => btn.hidden = true);
+        this.autoplay = this.initAutoPlay(Number(this.getAttribute("step-interval")) || undefined, this.getAttribute("autoplay-mode") || undefined);
+        this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
+        this.setMaxWidth();
+        this.setNumSlides();
+        this.setTransitionSpeed();
+        this.setCrawlSpeed();
+    }
+
+    setMaxWidth(): void {
+        const maxWidth = this.getAttribute("max-width");
+        if (!maxWidth) return;
+        this.stylesheet.insertRule(`:host {--max-width: ${maxWidth}}`, this.stylesheet.cssRules.length);
+    }
+
+    setNumSlides(): void {
+        const numSlides = this.getAttribute("num-slides");
+        if (!numSlides) return;
+        this.stylesheet.insertRule(`:host {--slide-width: calc(100 / ${+numSlides} * .95%);}`, this.stylesheet.cssRules.length)
+    }
+
+    setTransitionSpeed(): void {
+        const transitionSpeed = this.getAttribute("transition-speed");
+        if (!transitionSpeed) return;
+        this.stylesheet.insertRule(`:host {--transition-speed: ${transitionSpeed}ms}`, this.stylesheet.cssRules.length)
+    }
+
+    setCrawlSpeed(): void {
+        const transitionSpeed = this.getAttribute("crawl-speed");
+        if (!transitionSpeed) return;
+        this.stylesheet.insertRule(`:host([autoplay-mode=crawl]) {--transition-speed: ${transitionSpeed}ms}`, this.stylesheet.cssRules.length)
     }
 
 
