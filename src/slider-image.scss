@@ -33,7 +33,7 @@
     left: calc(var(--slide-width) * -1);
 
     &.slide-image {
-      transition: transform var(--transition-speed) cubic-bezier(0, 0, 1, 1);
+      transition: transform var(--transition-speed) var(--easing, linear);
     }
 
     &:after {

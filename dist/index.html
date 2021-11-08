@@ -21,7 +21,7 @@
     <title>Image Slider</title>
 </head>
 <body class="m-0">
-<h1 class="text-center">May the Force Be With You</h1>
+<h1 class="text-center">Image Slider Demos</h1>
 <!--
     attributes:
     max-width: (string, default 100%) number px|rem|em|%|vw
@@ -31,9 +31,10 @@
     step-interval: (number, default 3000, requires autoplay-mode = step) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 3000ms)
     transition-speed (number, default 500) should be <= steptiming (default 500ms)
     crawl-speed (number, default 6000 requires autoplay-mode = crawl) when autoplay is in crawl mode, the time in milliseconds to scroll one slide
--->
+    easing: (string, default linear) the type of transition
+ -->
 
-<image-slider autoplay-mode="crawl" num-slides="6">
+<image-slider max-width="1500px" autoplay-mode="step" easing="ease" transition-speed="1000" num-slides="7">
     <style>
         image-slider {
             transition: opacity .250s ease;
@@ -41,6 +42,10 @@
 
         image-slider:not(:defined) {
             opacity: 0;
+        }
+
+        image-slider:nth-of-type(2) {
+            margin-top: 50px;
         }
     </style>
     <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
@@ -62,12 +67,7 @@
     <img slot="slide" width="250" height="371" src="images/sw/episode-ix.jpg"
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
-<image-slider autoplay-mode="step" num-slides="6">
-    <style>
-        image-slider:nth-of-type(2) {
-            margin-top: 50px;
-        }
-    </style>
+<image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="7">
     <p style="display:grid;place-content:center">Loading...</p>
     <img slot="slide" width="250" height="371" src="images/hp/hp-1.jpg"
          alt="Harry Potter and the Sorcerer's Stone">

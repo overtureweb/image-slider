@@ -114,36 +114,18 @@ class Slider extends HTMLElement {
     handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(Number(this.getAttribute("step-interval")) || undefined, this.getAttribute("autoplay-mode") || undefined);
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
-        this.setMaxWidth();
-        this.setNumSlides();
-        this.setTransitionSpeed();
-        this.setCrawlSpeed();
+        [...this.attributes].forEach(({name, value}) => (this.attributesToCssRulesMap(value) as { [key: string]: () => {} })[name]?.());
     }
 
-    setMaxWidth(): void {
-        const maxWidth = this.getAttribute("max-width");
-        if (!maxWidth) return;
-        this.stylesheet.insertRule(`:host {--max-width: ${maxWidth}}`, this.stylesheet.cssRules.length);
+    attributesToCssRulesMap(value: string) {
+        return {
+            "max-width": () => this.stylesheet.insertRule(`:host {--max-width: ${value}}`, this.stylesheet.cssRules.length),
+            "num-slides": () => this.stylesheet.insertRule(`:host {--slide-width: calc(100 / ${+value} * .95%);}`, this.stylesheet.cssRules.length),
+            "transition-speed": () => this.stylesheet.insertRule(`:host {--transition-speed: ${value}ms}`, this.stylesheet.cssRules.length),
+            "crawl-speed": () => this.stylesheet.insertRule(`:host([autoplay-mode=crawl]) {--transition-speed: ${value}ms}`, this.stylesheet.cssRules.length),
+            "easing": () => this.stylesheet.insertRule(`:host {--easing: ${value}`, this.stylesheet.cssRules.length)
+        }
     }
-
-    setNumSlides(): void {
-        const numSlides = this.getAttribute("num-slides");
-        if (!numSlides) return;
-        this.stylesheet.insertRule(`:host {--slide-width: calc(100 / ${+numSlides} * .95%);}`, this.stylesheet.cssRules.length)
-    }
-
-    setTransitionSpeed(): void {
-        const transitionSpeed = this.getAttribute("transition-speed");
-        if (!transitionSpeed) return;
-        this.stylesheet.insertRule(`:host {--transition-speed: ${transitionSpeed}ms}`, this.stylesheet.cssRules.length)
-    }
-
-    setCrawlSpeed(): void {
-        const transitionSpeed = this.getAttribute("crawl-speed");
-        if (!transitionSpeed) return;
-        this.stylesheet.insertRule(`:host([autoplay-mode=crawl]) {--transition-speed: ${transitionSpeed}ms}`, this.stylesheet.cssRules.length)
-    }
-
 
     /**
      * Set all the event listeners
