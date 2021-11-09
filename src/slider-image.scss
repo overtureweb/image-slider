@@ -10,7 +10,7 @@
 }
 
 :host([autoplay-mode=crawl]) {
-  --cursor: default;
+  --cursor: pointer; // crawl mode isn't
   --transition-speed: 6000ms;
 }
 

@@ -31,9 +31,8 @@ class Slider extends HTMLElement {
 
     shadowDOM: ShadowRoot;
 
-    // autoplay function is
-    autoplay: () => NodeJS.Timer | void = () => {
-    };
+    autoplay: () => void = () => {};
+
     autoPlayIntervalID?: NodeJS.Timer | any;
 
     sliderButtons: NodeListOf<HTMLButtonElement>;
@@ -53,7 +52,6 @@ class Slider extends HTMLElement {
             this.slidesWrapper.append(...this.slides);
             this.imageOrder = this.initSlidesFlexOrder(this.slides);
             this.setSlidesFlexOrder();
-            this.handleUserSettings();
         } catch (error) {
             if (error instanceof Error) {
                 console.log(`Image Loading Error: ${error.message}`);
@@ -63,6 +61,7 @@ class Slider extends HTMLElement {
 
     connectedCallback() {
         this.setEvents();
+        this.handleUserSettings();
     }
 
     initSlides(): HTMLDivElement[] {
@@ -83,25 +82,40 @@ class Slider extends HTMLElement {
     }
 
     initAutoPlay(stepInterval: number = 3000, mode?: string) {
-        return () => {
-            switch (mode) {
-                case "crawl":
-                    this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
-                    this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
-                    this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
-                    return this.doTransition();
-                case "step":
+        switch (mode) {
+            case "crawl":
+                this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
+                this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
+                this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
+                this.initCrawlDirToggle();
+                return this.doTransition;
+            case "step":
+                return () => {
                     if (this.autoPlayIntervalID) return;
-                    return this.autoPlayIntervalID = setInterval(() => this.doTransition(), stepInterval);
-                default:
-                    break;
-            }
+                    this.autoPlayIntervalID = setInterval(() => this.doTransition(), stepInterval);
+                }
+                // if no autoplay-mode attribute was passed or it's one of the cases then return a function stub
+            default:
+                return () => {}
         }
     }
 
     disableStepInterval() {
         clearInterval(this.autoPlayIntervalID);
         this.autoPlayIntervalID = null;
+    }
+
+    initCrawlDirToggle() {
+        let pointerOrigin: number;
+        this.slidesWrapper.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            pointerOrigin = e.clientX
+        });
+        this.slidesWrapper.addEventListener("pointerup", (e) => {
+            e.preventDefault();
+            this.isDirectionLeft = e.clientX < pointerOrigin;
+            this.doTransition();
+        });
     }
 
     addStyleSheet(): CSSStyleSheet {
@@ -114,10 +128,13 @@ class Slider extends HTMLElement {
     handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(Number(this.getAttribute("step-interval")) || undefined, this.getAttribute("autoplay-mode") || undefined);
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
-        [...this.attributes].forEach(({name, value}) => (this.attributesToCssRulesMap(value) as { [key: string]: () => {} })[name]?.());
+        [...this.attributes].forEach(({
+                                          name,
+                                          value
+                                      }) => (this.htmlAttrsToCssMap(value) as { [key: string]: () => {} })[name]?.());
     }
 
-    attributesToCssRulesMap(value: string) {
+    htmlAttrsToCssMap(value: string): object {
         return {
             "max-width": () => this.stylesheet.insertRule(`:host {--max-width: ${value}}`, this.stylesheet.cssRules.length),
             "num-slides": () => this.stylesheet.insertRule(`:host {--slide-width: calc(100 / ${+value} * .95%);}`, this.stylesheet.cssRules.length),
