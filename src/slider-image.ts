@@ -1,9 +1,6 @@
 import css from "./slider-image.scss";
 import html from "./slider-image.html";
 
-const template = document.createElement("template");
-template.innerHTML = html;
-
 class Slider extends HTMLElement {
     // slider wrapper for the image slides
     slidesWrapper: HTMLDivElement;
@@ -29,24 +26,21 @@ class Slider extends HTMLElement {
     // the actual image width set by the CSS flex property
     slideWidthPx: number = 0;
 
-    shadowDOM: ShadowRoot;
-
-    autoplay: () => void = () => {};
+    autoplay: () => void = () => {
+    };
 
     autoPlayIntervalID?: NodeJS.Timer | any;
 
     sliderButtons: NodeListOf<HTMLButtonElement>;
-
     stylesheet: CSSStyleSheet;
 
     constructor() {
         super();
         this.attachShadow({mode: "open"});
-        this.shadowDOM = this.shadowRoot as ShadowRoot;
-        this.shadowDOM.appendChild(template.content.cloneNode(true));
+        this.shadowRoot!.innerHTML = html;
         this.stylesheet = this.addStyleSheet();
-        this.slidesWrapper = this.shadowDOM.querySelector(".slider__slides") as HTMLDivElement;
-        this.sliderButtons = this.shadowDOM.querySelectorAll("button");
+        this.slidesWrapper = this.shadowRoot!.querySelector(".slider__slides") as HTMLDivElement;
+        this.sliderButtons = this.shadowRoot!.querySelectorAll("button");
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
@@ -67,7 +61,7 @@ class Slider extends HTMLElement {
     initSlides(): HTMLDivElement[] {
         const slot = document.createElement("slot");
         slot.name = "slide";
-        this.shadowDOM.append(slot);
+        this.shadowRoot!.append(slot);
         if (!slot.assignedNodes().length) throw new Error("No properly formatted images found")
         const slides: HTMLDivElement[] = Array.from({length: slot.assignedNodes().length * 2});
         for (let i = 0; i < slides.length / 2; i++) {
@@ -81,7 +75,7 @@ class Slider extends HTMLElement {
         return slides;
     }
 
-    initAutoPlay(stepInterval: number = 3000, mode?: string) {
+    initAutoPlay(stepInterval: string | number = 3000, mode?: string | null) {
         switch (mode) {
             case "crawl":
                 this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
@@ -92,11 +86,12 @@ class Slider extends HTMLElement {
             case "step":
                 return () => {
                     if (this.autoPlayIntervalID) return;
-                    this.autoPlayIntervalID = setInterval(() => this.doTransition(), stepInterval);
+                    this.autoPlayIntervalID = setInterval(() => this.doTransition(), +stepInterval);
                 }
-                // if no autoplay-mode attribute was passed or it's one of the cases then return a function stub
+            // if no autoplay-mode attribute was passed or it's one of the cases then return a function stub
             default:
-                return () => {}
+                return () => {
+                }
         }
     }
 
@@ -121,26 +116,29 @@ class Slider extends HTMLElement {
     addStyleSheet(): CSSStyleSheet {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
-        this.shadowDOM.append(styles);
+        this.shadowRoot!.append(styles);
         return styles.sheet!;
     }
 
     handleUserSettings(): void {
-        this.autoplay = this.initAutoPlay(Number(this.getAttribute("step-interval")) || undefined, this.getAttribute("autoplay-mode") || undefined);
+        this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode"));
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
         [...this.attributes].forEach(({
                                           name,
                                           value
-                                      }) => (this.htmlAttrsToCssMap(value) as { [key: string]: () => {} })[name]?.());
+                                      }) => {
+            const cssRule = (this.htmlAttrsToCssMap() as { [k: string]: (arg: string) => string })[name]?.(value);
+            cssRule && this.stylesheet.insertRule(cssRule, this.stylesheet.cssRules.length)
+        });
     }
 
-    htmlAttrsToCssMap(value: string): object {
+    htmlAttrsToCssMap(): object {
         return {
-            "max-width": () => this.stylesheet.insertRule(`:host {--max-width: ${value}}`, this.stylesheet.cssRules.length),
-            "num-slides": () => this.stylesheet.insertRule(`:host {--slide-width: calc(100 / ${+value} * .95%);}`, this.stylesheet.cssRules.length),
-            "transition-speed": () => this.stylesheet.insertRule(`:host {--transition-speed: ${value}ms}`, this.stylesheet.cssRules.length),
-            "crawl-speed": () => this.stylesheet.insertRule(`:host([autoplay-mode=crawl]) {--transition-speed: ${value}ms}`, this.stylesheet.cssRules.length),
-            "easing": () => this.stylesheet.insertRule(`:host {--easing: ${value}`, this.stylesheet.cssRules.length)
+            "max-width": (value: string) => `:host {--max-width: ${value}}`,
+            "num-slides": (value: string) => `:host {--slide-width: calc(100 / ${+value} * .95%);}`,
+            "transition-speed": (value: string) => `:host {--transition-speed: ${value}ms}`,
+            "crawl-speed": (value: string) => `:host([autoplay-mode=crawl]) {--transition-speed: ${value}ms}`,
+            "easing": (value: string) => `:host {--easing: ${value}`
         }
     }
 

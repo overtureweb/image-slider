@@ -21,6 +21,7 @@
     <title>Image Slider</title>
 </head>
 <body class="m-0">
+
 <h1 class="text-center">Image Slider Demos!!</h1>
 <!--
     attributes:
@@ -38,15 +39,13 @@
     <style>
         image-slider {
             transition: opacity .250s ease;
+            margin-bottom: 50px;
         }
 
         image-slider:not(:defined) {
             opacity: 0;
         }
 
-        image-slider:nth-of-type(2) {
-            margin-top: 50px;
-        }
     </style>
     <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
          alt="Star Wars Episode I The Phantom Menace">
@@ -86,6 +85,40 @@
     <img slot="slide" width="250" height="371" src="images/hp/hp-8.jpg"
          alt="Harry Potter and the Deathly Hallows Part II">
 </image-slider>
+<image-slider max-width="1500px" hide-controls num-slides="7">
+    <style>
+        image-slider {
+            transition: opacity .250s ease;
+        }
+
+        image-slider:not(:defined) {
+            opacity: 0;
+        }
+
+        image-slider:nth-of-type(2) {
+            margin-top: 50px;
+        }
+    </style>
+    <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
+         alt="Star Wars Episode I The Phantom Menace">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-ii.jpg"
+         alt="Star Wars Episode II: Attack of the Clones">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-iii.jpg"
+         alt="Star Wars Episode III: Revenge of the Sith">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-iv.jpg"
+         alt="Star Wars Episode IV A New Hope">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-v.jpg"
+         alt="Star Wars Episode V: The Empire Strikes Back">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-vi.jpg"
+         alt="Star Wars Episode VI: Return of the Jedi">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-vii.jpg"
+         alt="Star Wars Episode VII The Force Awakens">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-viii.jpg"
+         alt="Star Wars Episode VIII: The Last Jedi">
+    <img slot="slide" width="250" height="371" src="images/sw/episode-ix.jpg"
+         alt="Star Wars Episode IX: The Rise of Skywalker">
+</image-slider>
+
 <script src="bundle.js"></script>
 </body>
 </html>
