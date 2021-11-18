@@ -22,7 +22,7 @@
 </head>
 <body class="m-0">
 
-<h1 class="text-center">Image Slider Demos!!</h1>
+<h1 class="text-center">Image Slider Demos</h1>
 <!--
     attributes:
     max-width: (string, default 100%) number px|rem|em|%|vw
@@ -34,7 +34,7 @@
     crawl-speed (number, default 6000 requires autoplay-mode = crawl) when autoplay is in crawl mode, the time in milliseconds to scroll one slide
     easing: (string, default linear) the type of transition
  -->
-
+<h2>Autoplay with Step Transition</h2>
 <image-slider max-width="1500px" autoplay-mode="step" easing="ease" transition-speed="1000" num-slides="7">
     <style>
         image-slider {
@@ -47,6 +47,7 @@
         }
 
     </style>
+    <p style="display:grid;place-content:center">Loading...</p>
     <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
          alt="Star Wars Episode I The Phantom Menace">
     <img slot="slide" width="250" height="371" src="images/sw/episode-ii.jpg"
@@ -66,6 +67,7 @@
     <img slot="slide" width="250" height="371" src="images/sw/episode-ix.jpg"
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
+<h2>Crawl Mode (drag to change direction)</h2>
 <image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="7">
     <p style="display:grid;place-content:center">Loading...</p>
     <img slot="slide" width="250" height="371" src="images/hp/hp-1.jpg"
@@ -85,20 +87,9 @@
     <img slot="slide" width="250" height="371" src="images/hp/hp-8.jpg"
          alt="Harry Potter and the Deathly Hallows Part II">
 </image-slider>
+<h2>Basic version, no autoplay, controls hidden</h2>
 <image-slider max-width="1500px" hide-controls num-slides="7">
-    <style>
-        image-slider {
-            transition: opacity .250s ease;
-        }
-
-        image-slider:not(:defined) {
-            opacity: 0;
-        }
-
-        image-slider:nth-of-type(2) {
-            margin-top: 50px;
-        }
-    </style>
+    <p style="display:grid;place-content:center">Loading...</p>
     <img slot="slide" width="250" height="371" src="images/sw/episode-i.jpg"
          alt="Star Wars Episode I The Phantom Menace">
     <img slot="slide" width="250" height="371" src="images/sw/episode-ii.jpg"
