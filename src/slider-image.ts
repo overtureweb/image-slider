@@ -54,7 +54,7 @@ class Slider extends HTMLElement {
     }
 
     connectedCallback() {
-        this.setEvents();
+        this.setListeners();
         this.handleUserSettings();
     }
 
@@ -146,7 +146,7 @@ class Slider extends HTMLElement {
      * Set all the event listeners
      * all the event handler methods have been defined using function expression syntax to avoid the need for .bind(this) here
      */
-    setEvents(): void {
+    setListeners(): void {
         this.sliderButtons.forEach(btn => btn.addEventListener("click", this.handleClick));
         this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
