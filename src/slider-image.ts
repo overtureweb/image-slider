@@ -230,6 +230,7 @@ class Slider extends HTMLElement {
     handlePointerUp = (e: PointerEvent): void => {
         e.preventDefault();
         this.slidesWrapper.classList.add("slide-image");
+        // mimic snap scroll
         if (Math.abs(this.scrolled / this.slideWidthPx) > 0.5) {
             this.scrolled = 0;
             this.slideX();
