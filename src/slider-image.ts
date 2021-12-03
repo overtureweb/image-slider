@@ -184,6 +184,7 @@ class Slider extends HTMLElement {
         this.slideToZero();
     };
 
+    // todo combine this with initSlidesFlexOrder, takes two args, this.slides and optional offset which defaults to 1 (see comments above init func for more info)
     setSlidesFlexOrder(offset: number = 0): void {
         this.slides.forEach((slide, i) => {
             this.imageOrder[i] = (this.imageOrder[i] + offset) % this.slides.length;
