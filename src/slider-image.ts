@@ -133,7 +133,7 @@ class Slider extends HTMLElement {
             "num-slides": (value: string) => `:host {--slide-width: calc(100 / ${+value} * .95%);}`,
             "transition-speed": (value: string) => `:host {--transition-speed: ${value}ms}`,
             "crawl-speed": (value: string) => `:host([autoplay-mode=crawl]) {--transition-speed: ${value}ms}`,
-            "easing": (value: string) => `:host {--easing: ${value}`
+            "transition-easing": (value: string) => `:host {--easing: ${value}`
         }
     }
 
