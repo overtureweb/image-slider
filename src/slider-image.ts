@@ -8,9 +8,6 @@ class Slider extends HTMLElement {
     // collection of image slides which contain the image elements
     slides: HTMLDivElement[] = [];
 
-    // current flex order of the image slides
-    imageOrder: number[] = [];
-
     // is the first/most recent transition direction left?
     isDirectionLeft: boolean = true;
 
@@ -44,7 +41,6 @@ class Slider extends HTMLElement {
         try {
             this.slides = this.initSlides();
             this.slidesWrapper.append(...this.slides);
-            this.imageOrder = this.initSlidesFlexOrder(this.slides);
             this.setSlidesFlexOrder();
         } catch (error) {
             if (error instanceof Error) {
@@ -80,7 +76,7 @@ class Slider extends HTMLElement {
                 this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
                 this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
                 this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
-                this.initCrawlDirToggle();
+                this.setCrawlDirToggle();
                 return this.doTransition;
             case "step":
                 return () => {
@@ -99,7 +95,7 @@ class Slider extends HTMLElement {
         this.autoPlayIntervalID = null;
     }
 
-    initCrawlDirToggle() {
+    setCrawlDirToggle() {
         let pointerOrigin: number;
         this.slidesWrapper.addEventListener("pointerdown", (e) => {
             e.preventDefault();
@@ -165,30 +161,25 @@ class Slider extends HTMLElement {
     }
 
     /**
-     * Create and populate an array with each slide's index, slideswrapper is offset left by one slide, this method makes the last slide first to counter the effect
-     * @param slideList
-     */
-    initSlidesFlexOrder(slideList: Element[]): number[] {
-        return Array.from({length: slideList.length}, (el, i) => (i + 1) % slideList.length);
-    }
-
-    /**
      * called as either the transitionend handler or manually when this.scrolled / this.imageWidth > 1
      */
     reorderSlides = (): void | number => {
         this.slidesWrapper.classList.remove("slide-image");
         if (Math.abs(this.scrolled) > 0) return (this.scrolled = 0);
         // using length prevents a negative number in the subsequent modulo call
-        let offset = this.isDirectionLeft ? this.slides.length - 1 : 1;
-        this.setSlidesFlexOrder(offset);
+        let step = this.isDirectionLeft ? this.slides.length - 1 : 1;
+        this.setSlidesFlexOrder(step);
         this.slideToZero();
     };
 
-    // todo combine this with initSlidesFlexOrder, takes two args, this.slides and optional offset which defaults to 1 (see comments above init func for more info)
-    setSlidesFlexOrder(offset: number = 0): void {
+    /**
+     * Sets the initial and current order of the flex elements, this combined with the translateX transition is what creates the scroll effect
+     * The Image Slider is offset by the width of one slide (prevents a gap from appearing), the initial function call offsets by 1 to make the last image first, and outside the viewport
+     * @param step
+     */
+    setSlidesFlexOrder(step: number = 1): void {
         this.slides.forEach((slide, i) => {
-            this.imageOrder[i] = (this.imageOrder[i] + offset) % this.slides.length;
-            slide.style.order = this.imageOrder[i].toString();
+            slide.style.order = ((+(slide.style.order || i) + step) % this.slides.length).toString();
         });
     }
 
