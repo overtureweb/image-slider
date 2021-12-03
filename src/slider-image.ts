@@ -59,16 +59,15 @@ class Slider extends HTMLElement {
     }
 
     initSlides(): HTMLDivElement[] {
-        const slot = document.createElement("slot");
-        slot.name = "slide";
+        const slot: HTMLSlotElement = document.createElement("slot");
         this.shadowRoot!.append(slot);
-        if (!slot.assignedNodes().length) throw new Error("No properly formatted images found")
-        const slides: HTMLDivElement[] = Array.from({length: slot.assignedNodes().length * 2});
+        if (!slot.assignedElements().length) throw new Error("No properly formatted images found")
+        const images = slot.assignedElements().filter(el => el.tagName === "IMG") as HTMLImageElement[];
+        const slides: HTMLDivElement[] = Array(images.length * 2);
         for (let i = 0; i < slides.length / 2; i++) {
-            let [image] = slot.assignedNodes() as HTMLImageElement[];
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
-            slideWrapper.append(image);
+            slideWrapper.append(images[i]);
             slides[i] = slideWrapper;
             slides[i + slides.length / 2] = slideWrapper.cloneNode(true) as HTMLDivElement;
         }
@@ -148,7 +147,13 @@ class Slider extends HTMLElement {
      */
     setListeners(): void {
         this.sliderButtons.forEach(btn => btn.addEventListener("click", this.handleClick));
-        this.slidesWrapper.addEventListener("transitionend", this.reorderSlides);
+        this.slidesWrapper.addEventListener("transitionend", () => {
+            this.reorderSlides();
+            setTimeout(() => {
+                this.autoplay();
+            }, 0);
+
+        });
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
         this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
         this.slidesWrapper.addEventListener("pointerup", this.handlePointerUp);
@@ -177,7 +182,6 @@ class Slider extends HTMLElement {
         let offset = this.isDirectionLeft ? this.slides.length - 1 : 1;
         this.setSlidesFlexOrder(offset);
         this.slideToZero();
-        setTimeout(() => this.autoplay(), 0);
     };
 
     setSlidesFlexOrder(offset: number = 0): void {
@@ -238,7 +242,6 @@ class Slider extends HTMLElement {
             this.slideToZero();
         }
         this.isScrolling = false;
-        this.autoplay();
     };
 
     /**
