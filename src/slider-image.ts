@@ -1,6 +1,11 @@
 import css from "./slider-image.scss";
 import html from "./slider-image.html";
 
+enum AutoPlayModes {
+    crawl = "crawl",
+    step = "step"
+}
+
 class Slider extends HTMLElement {
     // slider wrapper for the image slides
     slidesWrapper: HTMLDivElement;
@@ -71,15 +76,15 @@ class Slider extends HTMLElement {
         return slides;
     }
 
-    initAutoPlay(stepInterval: string | number = 3000, mode?: string | null) {
+    initAutoPlay(stepInterval: string | number = 3000, mode?: AutoPlayModes) {
         switch (mode) {
-            case "crawl":
+            case AutoPlayModes.crawl:
                 this.slidesWrapper.removeEventListener("pointerdown", this.handlePointerDown);
                 this.slidesWrapper.removeEventListener("pointermove", this.handlePointerMove);
                 this.slidesWrapper.removeEventListener("pointerup", this.handlePointerUp);
                 this.setCrawlDirToggle();
                 return this.doTransition;
-            case "step":
+            case AutoPlayModes.step:
                 return () => {
                     if (this.autoPlayIntervalID) return;
                     this.autoPlayIntervalID = setInterval(() => this.doTransition(), +stepInterval);
@@ -116,7 +121,7 @@ class Slider extends HTMLElement {
     }
 
     handleUserSettings(): void {
-        this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode"));
+        this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode") as AutoPlayModes);
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
         this.hasAttribute("lazyload") && this.initImgLazyLoading();
         [...this.attributes].forEach(({name, value}) => {
@@ -149,7 +154,6 @@ class Slider extends HTMLElement {
             setTimeout(() => {
                 this.autoplay();
             }, 0);
-
         });
         this.slidesWrapper.addEventListener("pointerdown", this.handlePointerDown);
         this.slidesWrapper.addEventListener("pointermove", this.handlePointerMove);
