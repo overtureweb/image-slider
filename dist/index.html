@@ -17,6 +17,7 @@
         .text-center {
             text-align: center;
         }
+
         image-slider {
             transition: opacity .250s ease;
             margin-bottom: 50px;
@@ -24,6 +25,23 @@
 
         image-slider:not(:defined) {
             opacity: 0;
+        }
+        .spinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 5px solid slateblue;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: 1s spin infinite linear;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
     <title>Image Slider</title>
@@ -48,8 +66,9 @@
     lazyload: (boolean) when set an intersection observer will lazyload the images, requires a placeholder file
  -->
 <h2>Autoplay with Step Transition</h2>
-<image-slider lazyload max-width="1500px" autoplay-mode="step" num-slides="3" num-slides-md="6" num-slides-lg="9" num-slides-xl="12">
-    <p slot="loading" style="display:grid;place-content:center">Loading...</p>
+<image-slider lazyload max-width="1500px" autoplay-mode="step" num-slides="3" num-slides-md="6" num-slides-lg="9"
+              num-slides-xl="12">
+    <p slot="loading" style="display:grid;place-content:center"><span class="spinner" aria-label="loading"></span></p>
     <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-i.jpg"
          alt="Star Wars Episode I The Phantom Menace">
     <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-ii.jpg"
@@ -90,27 +109,27 @@
 <!--         alt="Harry Potter and the Deathly Hallows Part II">-->
 <!--</image-slider>-->
 <!--<h2>Basic version, no autoplay, controls hidden</h2>-->
-<image-slider max-width="1500px" hide-controls num-slides="7">
-    <p slot="loading" style="display:grid;place-content:center">Loading...</p>
-    <img width="250" height="371" src="images/sw/episode-i.jpg"
-         alt="Star Wars Episode I The Phantom Menace">
-    <img width="250" height="371" src="images/sw/episode-ii.jpg"
-         alt="Star Wars Episode II: Attack of the Clones">
-    <img width="250" height="371" src="images/sw/episode-iii.jpg"
-         alt="Star Wars Episode III: Revenge of the Sith">
-    <img width="250" height="371" src="images/sw/episode-iv.jpg"
-         alt="Star Wars Episode IV A New Hope">
-    <img width="250" height="371" src="images/sw/episode-v.jpg"
-         alt="Star Wars Episode V: The Empire Strikes Back">
-    <img width="250" height="371" src="images/sw/episode-vi.jpg"
-         alt="Star Wars Episode VI: Return of the Jedi">
-    <img width="250" height="371" src="images/sw/episode-vii.jpg"
-         alt="Star Wars Episode VII The Force Awakens">
-    <img width="250" height="371" src="images/sw/episode-viii.jpg"
-         alt="Star Wars Episode VIII: The Last Jedi">
-    <img width="250" height="371" src="images/sw/episode-ix.jpg"
-         alt="Star Wars Episode IX: The Rise of Skywalker">
-</image-slider>
+<!--<image-slider max-width="1500px" hide-controls num-slides="7">-->
+<!--    <p slot="loading" style="display:grid;place-content:center">Loading...</p>-->
+<!--    <img width="250" height="371" src="images/sw/episode-i.jpg"-->
+<!--         alt="Star Wars Episode I The Phantom Menace">-->
+<!--    <img width="250" height="371" src="images/sw/episode-ii.jpg"-->
+<!--         alt="Star Wars Episode II: Attack of the Clones">-->
+<!--    <img width="250" height="371" src="images/sw/episode-iii.jpg"-->
+<!--         alt="Star Wars Episode III: Revenge of the Sith">-->
+<!--    <img width="250" height="371" src="images/sw/episode-iv.jpg"-->
+<!--         alt="Star Wars Episode IV A New Hope">-->
+<!--    <img width="250" height="371" src="images/sw/episode-v.jpg"-->
+<!--         alt="Star Wars Episode V: The Empire Strikes Back">-->
+<!--    <img width="250" height="371" src="images/sw/episode-vi.jpg"-->
+<!--         alt="Star Wars Episode VI: Return of the Jedi">-->
+<!--    <img width="250" height="371" src="images/sw/episode-vii.jpg"-->
+<!--         alt="Star Wars Episode VII The Force Awakens">-->
+<!--    <img width="250" height="371" src="images/sw/episode-viii.jpg"-->
+<!--         alt="Star Wars Episode VIII: The Last Jedi">-->
+<!--    <img width="250" height="371" src="images/sw/episode-ix.jpg"-->
+<!--         alt="Star Wars Episode IX: The Rise of Skywalker">-->
+<!--</image-slider>-->
 
 <script src="bundle.js"></script>
 </body>

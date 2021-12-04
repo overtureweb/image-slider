@@ -64,6 +64,7 @@ class Slider extends HTMLElement {
             const slideWrapper: HTMLDivElement = document.createElement("div");
             slideWrapper.classList.add("slider__slide");
             slideWrapper.append(images[i]);
+            // add the original and cloned image to the slides array
             slides[i] = slideWrapper;
             slides[i + slides.length / 2] = slideWrapper.cloneNode(true) as HTMLDivElement;
         }
@@ -85,8 +86,7 @@ class Slider extends HTMLElement {
                 }
             // if no autoplay-mode attribute was passed or it's one of the cases then return a function stub
             default:
-                return () => {
-                }
+                return () => null
         }
     }
 
