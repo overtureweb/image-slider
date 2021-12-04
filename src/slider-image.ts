@@ -118,19 +118,20 @@ class Slider extends HTMLElement {
     handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode"));
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
-        [...this.attributes].forEach(({
-                                          name,
-                                          value
-                                      }) => {
-            const cssRule = (this.htmlAttrsToCssMap() as { [k: string]: (arg: string) => string })[name]?.(value);
+        this.hasAttribute("lazyload") && this.initLazyLoading();
+        [...this.attributes].forEach(({name, value}) => {
+            const cssRule = (this.mapHtmlAttrsToCss() as { [k: string]: (arg: string) => string })[name]?.(value);
             cssRule && this.stylesheet.insertRule(cssRule, this.stylesheet.cssRules.length)
         });
     }
 
-    htmlAttrsToCssMap(): object {
+    mapHtmlAttrsToCss(): object {
         return {
             "max-width": (value: string) => `:host {--max-width: ${value}}`,
             "num-slides": (value: string) => `:host {--slide-width: calc(100 / ${+value} * .95%);}`,
+            "num-slides-md": (value: string) => `@media all and (min-width: 768px) {:host {--slide-width: calc(100 / ${+value} * .95%);}}`,
+            "num-slides-lg": (value: string) => `@media all and (min-width: 992px) {:host {--slide-width: calc(100 / ${+value} * .95%);}}`,
+            "num-slides-xl": (value: string) => `@media all and (min-width: 1200px) {:host {--slide-width: calc(100 / ${+value} * .95%);}}`,
             "transition-speed": (value: string) => `:host {--transition-speed: ${value}ms}`,
             "crawl-speed": (value: string) => `:host([autoplay-mode=crawl]) {--transition-speed: ${value}ms}`,
             "transition-easing": (value: string) => `:host {--easing: ${value}`
@@ -158,6 +159,22 @@ class Slider extends HTMLElement {
             this.autoplay();
         });
         window.addEventListener("resize", () => (this.slideWidthPx = this.slides[0].getBoundingClientRect().width));
+    }
+
+    initLazyLoading = () => {
+        const obsCallback: IntersectionObserverCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target as HTMLImageElement;
+                    if (target.tagName === "IMG") {
+                        target.dataset.src && (target.src = target.dataset.src);
+                        observer.unobserve(target);
+                    }
+                }
+            })
+        }
+        const observer: IntersectionObserver = new IntersectionObserver(obsCallback, {threshold: 0});
+        this.slides.forEach(slide => observer.observe(slide.querySelector("img")!));
     }
 
     /**

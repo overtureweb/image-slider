@@ -34,57 +34,62 @@
 <!--
     attributes:
     max-width: (string, default 100%) number px|rem|em|%|vw
+    !! mobile first, sizes cascade upwards if larger breakpoint is not set
     num-slides: (number, default: 3) used to compute the number of slides to display
+    num-slides-md: (number, default: undefined) standard tablet breakpoint of 768px
+    num-slides-lg: (number, default: undefined) standard larger breakpoint of 992px
+    num-slides-xl: (number, default: undefined) standard xl breakpoint of 1200px
     hide-controls: (boolean) when true will hide the side buttons
     autoplay-mode: ("step" | "crawl", default: undefined) step automatically advances one slide at a fixed interval, crawl continuously smooth scrolls and touch events are disabled
     step-interval: (number, default 3000, requires autoplay-mode = step) when autoplay is in step mode, the time in milliseconds until the next slide transition (default 3000ms)
     transition-speed (number, default 500) should be <= steptiming (default 500ms)
     crawl-speed (number, default 6000 requires autoplay-mode = crawl) when autoplay is in crawl mode, the time in milliseconds to scroll one slide
     transition-easing: (string, default linear) the type of transition
+    lazyload: (boolean) when set an intersection observer will lazyload the images, requires a placeholder file
  -->
 <h2>Autoplay with Step Transition</h2>
-<image-slider max-width="1500px" autoplay-mode="step" num-slides="7">
+<image-slider lazyload max-width="1500px" autoplay-mode="step" num-slides="3" num-slides-md="6" num-slides-lg="9" num-slides-xl="12">
     <p slot="loading" style="display:grid;place-content:center">Loading...</p>
-    <img width="250" height="371" src="images/sw/episode-i.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-i.jpg"
          alt="Star Wars Episode I The Phantom Menace">
-    <img width="250" height="371" src="images/sw/episode-ii.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-ii.jpg"
          alt="Star Wars Episode II: Attack of the Clones">
-    <img width="250" height="371" src="images/sw/episode-iii.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-iii.jpg"
          alt="Star Wars Episode III: Revenge of the Sith">
-    <img width="250" height="371" src="images/sw/episode-iv.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-iv.jpg"
          alt="Star Wars Episode IV A New Hope">
-    <img width="250" height="371" src="images/sw/episode-v.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-v.jpg"
          alt="Star Wars Episode V: The Empire Strikes Back">
-    <img width="250" height="371" src="images/sw/episode-vi.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-vi.jpg"
          alt="Star Wars Episode VI: Return of the Jedi">
-    <img width="250" height="371" src="images/sw/episode-vii.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-vii.jpg"
          alt="Star Wars Episode VII The Force Awakens">
-    <img width="250" height="371" src="images/sw/episode-viii.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-viii.jpg"
          alt="Star Wars Episode VIII: The Last Jedi">
-    <img width="250" height="371" src="images/sw/episode-ix.jpg"
+    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-ix.jpg"
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
-<h2>Crawl Mode (drag to change direction)</h2>
-<image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="7">
-    <p slot="loading" style="display:grid;place-content:center">Loading...</p>
-    <img width="250" height="371" src="images/hp/hp-1.jpg"
-         alt="Harry Potter and the Sorcerer's Stone">
-    <img width="250" height="371" src="images/hp/hp-2.jpg"
-         alt="Harry Potter and the Chamber of Secrets">
-    <img width="250" height="371" src="images/hp/hp-3.jpg"
-         alt="Harry Potter and the Prisoner of Azkaban">
-    <img width="250" height="371" src="images/hp/hp-4.jpg"
-         alt="Harry Potter and the Goblet of Fire">
-    <img width="250" height="371" src="images/hp/hp-5.jpg"
-         alt="Harry Potter and the Order of the Phoenix">
-    <img width="250" height="371" src="images/hp/hp-6.jpg"
-         alt="Harry Potter and the Half-Blood Prince">
-    <img width="250" height="371" src="images/hp/hp-7.jpg"
-         alt="Harry Potter and the Deathly Hallows Part I">
-    <img width="250" height="371" src="images/hp/hp-8.jpg"
-         alt="Harry Potter and the Deathly Hallows Part II">
-</image-slider>
-<h2>Basic version, no autoplay, controls hidden</h2>
+<!--<h2>Crawl Mode (drag to change direction)</h2>-->
+<!--<image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="7">-->
+<!--    <p slot="loading" style="display:grid;place-content:center">Loading...</p>-->
+<!--    <img width="250" height="371" src="images/hp/hp-1.jpg"-->
+<!--         alt="Harry Potter and the Sorcerer's Stone">-->
+<!--    <img width="250" height="371" src="images/hp/hp-2.jpg"-->
+<!--         alt="Harry Potter and the Chamber of Secrets">-->
+<!--    <img width="250" height="371" src="images/hp/hp-3.jpg"-->
+<!--         alt="Harry Potter and the Prisoner of Azkaban">-->
+<!--    <img width="250" height="371" src="images/hp/hp-4.jpg"-->
+<!--         alt="Harry Potter and the Goblet of Fire">-->
+<!--    <img width="250" height="371" src="images/hp/hp-5.jpg"-->
+<!--         alt="Harry Potter and the Order of the Phoenix">-->
+<!--    <img width="250" height="371" src="images/hp/hp-6.jpg"-->
+<!--         alt="Harry Potter and the Half-Blood Prince">-->
+<!--    <img width="250" height="371" src="images/hp/hp-7.jpg"-->
+<!--         alt="Harry Potter and the Deathly Hallows Part I">-->
+<!--    <img width="250" height="371" src="images/hp/hp-8.jpg"-->
+<!--         alt="Harry Potter and the Deathly Hallows Part II">-->
+<!--</image-slider>-->
+<!--<h2>Basic version, no autoplay, controls hidden</h2>-->
 <image-slider max-width="1500px" hide-controls num-slides="7">
     <p slot="loading" style="display:grid;place-content:center">Loading...</p>
     <img width="250" height="371" src="images/sw/episode-i.jpg"
