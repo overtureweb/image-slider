@@ -26,13 +26,21 @@
         image-slider:not(:defined) {
             opacity: 0;
         }
+
         .spinner {
+            display: block;
+            text-align: center;
+        }
+
+        .spinner:before {
+            content: "";
             width: 1.5rem;
             height: 1.5rem;
-            border: 5px solid slateblue;
+            border: 5px solid darkseagreen;
             border-top-color: transparent;
             border-radius: 50%;
             animation: 1s spin infinite linear;
+            display: inline-block;
         }
 
         @keyframes spin {
@@ -68,66 +76,92 @@
 <h2>Autoplay with Step Transition</h2>
 <image-slider lazyload max-width="1500px" autoplay-mode="step" num-slides="3" num-slides-md="6" num-slides-lg="9"
               num-slides-xl="12">
-    <p slot="loading" style="display:grid;place-content:center"><span class="spinner" aria-label="loading"></span></p>
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-i.jpg"
+    <span slot="loading" class="spinner" aria-label="loading"></span>
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-i_ko51pn.webp"
          alt="Star Wars Episode I The Phantom Menace">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-ii.jpg"
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-ii_wcehpq.webp"
          alt="Star Wars Episode II: Attack of the Clones">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-iii.jpg"
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-iii_nsdhs1.webp"
          alt="Star Wars Episode III: Revenge of the Sith">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-iv.jpg"
+    <img class="lazyload" width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638811768/image-slider/sw/episode-iv_bcpqye.webp"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-iv_bcpqye.webp"
          alt="Star Wars Episode IV A New Hope">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-v.jpg"
+    <img class="lazyload" width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638811768/image-slider/sw/episode-v_mkenyg.webp"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-v_mkenyg.webp"
          alt="Star Wars Episode V: The Empire Strikes Back">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-vi.jpg"
+    <img class="lazyload" width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638811769/image-slider/sw/episode-vi_karnz5.webp"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-vi_karnz5.webp"
          alt="Star Wars Episode VI: Return of the Jedi">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-vii.jpg"
+    <img class="lazyload" width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638811769/image-slider/sw/episode-vii_u8zgbq.webp"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-vii_u8zgbq.webp"
          alt="Star Wars Episode VII The Force Awakens">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-viii.jpg"
+    <img class="lazyload" width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638811769/image-slider/sw/episode-viii_jox6ub.webp"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-viii_jox6ub.webp"
          alt="Star Wars Episode VIII: The Last Jedi">
-    <img width="250" height="371" src="images/placeholder.png" data-src="images/sw/episode-ix.jpg"
+    <img class="lazyload" width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638811769/image-slider/sw/episode-ix_dnbcmj.webp"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-ix_dnbcmj.webp"
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
 <h2>Crawl Mode (drag to change direction)</h2>
-<image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="7">
-    <p slot="loading" style="display:grid;place-content:center">Loading...</p>
-    <img width="250" height="371" src="images/hp/hp-1.jpg"
+<image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="5">
+    <span slot="loading" class="spinner" aria-label="loading"></span>
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/v1638815546/image-slider/hp/hp-1_uzolae.webp"
          alt="Harry Potter and the Sorcerer's Stone">
-    <img width="250" height="371" src="images/hp/hp-2.jpg"
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/v1638815546/image-slider/hp/hp-2_fipqok.webp"
          alt="Harry Potter and the Chamber of Secrets">
-    <img width="250" height="371" src="images/hp/hp-3.jpg"
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/v1638815546/image-slider/hp/hp-3_swody6.webp"
          alt="Harry Potter and the Prisoner of Azkaban">
-    <img width="250" height="371" src="images/hp/hp-4.jpg"
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638815546/image-slider/hp/hp-4_qknzmv.webp"
          alt="Harry Potter and the Goblet of Fire">
-    <img width="250" height="371" src="images/hp/hp-5.jpg"
+    <img width="250" height="371"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638815546/image-slider/hp/hp-5_rpviwe.webp"
          alt="Harry Potter and the Order of the Phoenix">
-    <img width="250" height="371" src="images/hp/hp-6.jpg"
+    <img width="250" height="371" class="lazyload"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638815546/image-slider/hp/hp-6_gsa9yp.webp"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638815546/image-slider/hp/hp-6_gsa9yp.webp"
          alt="Harry Potter and the Half-Blood Prince">
-    <img width="250" height="371" src="images/hp/hp-7.jpg"
+    <img width="250" height="371" class="lazyload"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638815546/image-slider/hp/hp-7_jy31sr.webp"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638815546/image-slider/hp/hp-7_jy31sr.webp"
          alt="Harry Potter and the Deathly Hallows Part I">
-    <img width="250" height="371" src="images/hp/hp-8.jpg"
+    <img width="250" height="371" class="lazyload"
+         data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638815546/image-slider/hp/hp-8_vspy41.webp"
+         src="https://res.cloudinary.com/overture-web-development/image/upload/t_lqip/v1638815546/image-slider/hp/hp-8_vspy41.webp"
          alt="Harry Potter and the Deathly Hallows Part II">
 </image-slider>
 <h2>Basic version, no autoplay, controls hidden</h2>
 <image-slider max-width="1500px" hide-controls num-slides="7">
-    <p slot="loading" style="display:grid;place-content:center">Loading...</p>
-    <img width="250" height="371" src="images/sw/episode-i.jpg"
+    <span slot="loading" class="spinner" aria-label="loading"></span>
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-i_ko51pn.webp"
          alt="Star Wars Episode I The Phantom Menace">
-    <img width="250" height="371" src="images/sw/episode-ii.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-ii_wcehpq.webp"
          alt="Star Wars Episode II: Attack of the Clones">
-    <img width="250" height="371" src="images/sw/episode-iii.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-iii_nsdhs1.webp"
          alt="Star Wars Episode III: Revenge of the Sith">
-    <img width="250" height="371" src="images/sw/episode-iv.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-v_mkenyg.webp"
          alt="Star Wars Episode IV A New Hope">
-    <img width="250" height="371" src="images/sw/episode-v.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-v_mkenyg.webp"
          alt="Star Wars Episode V: The Empire Strikes Back">
-    <img width="250" height="371" src="images/sw/episode-vi.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-vi_karnz5.webp"
          alt="Star Wars Episode VI: Return of the Jedi">
-    <img width="250" height="371" src="images/sw/episode-vii.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-vii_u8zgbq.webp"
          alt="Star Wars Episode VII The Force Awakens">
-    <img width="250" height="371" src="images/sw/episode-viii.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-viii_jox6ub.webp"
          alt="Star Wars Episode VIII: The Last Jedi">
-    <img width="250" height="371" src="images/sw/episode-ix.jpg"
+    <img width="250" height="371" src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811769/image-slider/sw/episode-ix_dnbcmj.webp"
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
 

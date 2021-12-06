@@ -123,7 +123,7 @@ class Slider extends HTMLElement {
     handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode") as AutoPlayModes);
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
-        this.hasAttribute("lazyload") && this.initImgLazyLoading();
+        this.initImgLazyLoading();
         [...this.attributes].forEach(({name, value}) => {
             const cssRule = (this.mapHtmlAttrsToCss() as { [k: string]: (arg: string) => string })[name]?.(value);
             cssRule && this.stylesheet.insertRule(cssRule, this.stylesheet.cssRules.length)
@@ -178,7 +178,10 @@ class Slider extends HTMLElement {
             })
         }
         const observer: IntersectionObserver = new IntersectionObserver(obsCallback, {threshold: 0});
-        this.slides.forEach(slide => observer.observe(slide.querySelector("img")!));
+        this.slides.forEach(slide => {
+            const lazyLoadable = slide.querySelector(".lazyload")
+            if (lazyLoadable) observer.observe(lazyLoadable)
+        });
     }
 
     /**
