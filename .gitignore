@@ -7,3 +7,5 @@
 /.firebase/hosting.ZGlzdA.cache
 /src/images/
 /firebase-debug.log
+/.env.production
+/.env.development

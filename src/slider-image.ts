@@ -272,3 +272,4 @@ class Slider extends HTMLElement {
 }
 
 export default Slider;
+
