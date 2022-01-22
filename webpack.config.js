@@ -10,7 +10,7 @@ module.exports = (env) => {
             port: 3000
         },
         output: {
-            filename: 'bundle.js',
+            filename: 'overturedev.io.carousel.js',
             path: path.resolve(__dirname, 'dist'),
         },
         module: {
