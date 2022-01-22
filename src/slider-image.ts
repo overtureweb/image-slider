@@ -61,6 +61,7 @@ class Slider extends HTMLElement {
 
     initSlides(): HTMLDivElement[] {
         const slotEl: HTMLSlotElement = document.createElement("slot");
+        slotEl.name = "loading";
         this.shadowRoot!.append(slotEl);
         if (!slotEl.assignedElements().length) throw new Error("No properly formatted images found")
         const images = slotEl.assignedElements().filter(el => el.tagName === "IMG") as HTMLImageElement[];
@@ -123,7 +124,7 @@ class Slider extends HTMLElement {
     handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode") as AutoPlayModes);
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
-        this.initImgLazyLoading();
+        this.hasAttribute("lazyload") && this.initImgLazyLoading();
         [...this.attributes].forEach(({name, value}) => {
             const cssRule = (this.mapHtmlAttrsToCss() as { [k: string]: (arg: string) => string })[name]?.(value);
             cssRule && this.stylesheet.insertRule(cssRule, this.stylesheet.cssRules.length)

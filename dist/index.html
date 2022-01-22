@@ -71,7 +71,7 @@
     transition-speed (number, default 500) should be <= steptiming (default 500ms)
     crawl-speed (number, default 6000 requires autoplay-mode = crawl) when autoplay is in crawl mode, the time in milliseconds to scroll one slide
     transition-easing: (string, default linear) the type of transition
-    lazyload: (boolean) when set an intersection observer will lazyload the images, requires a placeholder file
+    lazyload: (boolean) when set an intersection observer will lazyload the images, requires a placeholder file and the class attribute must include lazyload style rule
  -->
 <h2>Autoplay with Step Transition</h2>
 <image-slider lazyload max-width="1500px" autoplay-mode="step" num-slides="3" num-slides-md="6" num-slides-lg="9"
@@ -112,7 +112,7 @@
          alt="Star Wars Episode IX: The Rise of Skywalker">
 </image-slider>
 <h2>Crawl Mode (drag to change direction)</h2>
-<image-slider max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="5">
+<image-slider lazyload max-width="1500px" autoplay-mode="crawl" hide-controls num-slides="5">
     <span slot="loading" class="spinner" aria-label="loading"></span>
     <img width="250" height="371"
          src="https://res.cloudinary.com/overture-web-development/image/upload/v1638815546/image-slider/hp/hp-1_uzolae.webp"
