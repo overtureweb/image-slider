@@ -1,5 +1,17 @@
 # A responsive, configurable image slider web component
 ## How to Use
+Add the following script tag with the CDN version to your code just above the closing body tag:
+```
+<script src="https://cdn.jsdelivr.net/gh/overtureweb/image-slider@v1.0.0/dist/overturedev.io.carousel.js"></script>
+```
+
+Then add the web component to the body of your HTML
+```
+<image-slider>
+    ...img elements go here
+</image-slider>
+```
+## How to customize
 
 The web component tag can receive the following attributes:
 ### max-width
