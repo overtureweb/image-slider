@@ -59,10 +59,8 @@ class Slider extends HTMLElement {
     }
 
     initSlides(): HTMLDivElement[] {
-        const slotEl: HTMLSlotElement = document.createElement("slot");
-        this.shadowRoot!.append(slotEl);
-        if (!slotEl.assignedElements().length) throw new Error("No properly formatted images found")
-        const images = slotEl.assignedElements().filter(el => el.tagName === "IMG") as HTMLImageElement[];
+        const images = [...this.querySelectorAll("img")] as HTMLImageElement[];
+        if (!images.length) throw new Error("No properly formatted images found");
         const slides: HTMLDivElement[] = Array(images.length * 2);
         for (let i = 0; i < slides.length / 2; i++) {
             const slideWrapper: HTMLDivElement = document.createElement("div");
