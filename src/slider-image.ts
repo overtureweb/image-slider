@@ -58,19 +58,11 @@ class Slider extends HTMLElement {
         this.handleUserSettings();
     }
 
-    initSlides(): HTMLDivElement[] {
-        const images = [...this.querySelectorAll("img")] as HTMLImageElement[];
+    initSlides(): any {
+        const images = [...this.querySelectorAll(".slider__slide")];
         if (!images.length) throw new Error("No properly formatted images found");
-        const slides: HTMLDivElement[] = Array(images.length * 2);
-        for (let i = 0; i < slides.length / 2; i++) {
-            const slideWrapper: HTMLDivElement = document.createElement("div");
-            slideWrapper.classList.add("slider__slide");
-            slideWrapper.append(images[i]);
-            // add the original and cloned image to the slides array
-            slides[i] = slideWrapper;
-            slides[i + slides.length / 2] = slideWrapper.cloneNode(true) as HTMLDivElement;
-        }
-        return slides;
+        const clones: any = images.map(image => image.cloneNode(true));
+        return images.concat(clones)
     }
 
     initAutoPlay(stepInterval: string | number = 3000, mode?: AutoPlayModes) {
