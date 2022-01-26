@@ -58,11 +58,11 @@ class Slider extends HTMLElement {
         this.handleUserSettings();
     }
 
-    initSlides(): any {
-        const images = [...this.querySelectorAll(".slider__slide")];
-        if (!images.length) throw new Error("No properly formatted images found");
-        const clones: any = images.map(image => image.cloneNode(true));
-        return images.concat(clones)
+    initSlides(): HTMLDivElement[] {
+        const slides: Element[] = [...this.querySelectorAll(".slider__slide")];
+        if (!slides.length) throw new Error("No properly formatted images found");
+        const clones = slides.map(image => image.cloneNode(true));
+        return slides.concat(clones as Element[]) as HTMLDivElement[];
     }
 
     initAutoPlay(stepInterval: string | number = 3000, mode?: AutoPlayModes) {
