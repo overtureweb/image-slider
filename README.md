@@ -8,11 +8,16 @@ Add the following script tag with the CDN version to your code just above the cl
 Then add the web component to the body of your HTML
 ```
 <image-slider>
-    ...img elements go here
+    <!-- image elements go here, one per wrapper -->
+    <div class="slider-slide">
+        <img ... >
+    </div>
+    <div class="slider-slide">
+        <img ... >
+    </div>
 </image-slider>
 ```
 ## How to customize
-
 The web component tag can receive the following attributes:
 ### max-width
 The width of the component. Can be in px|rem|em|%|vw. Default: 100%
@@ -64,5 +69,4 @@ When the attribute is included an intersection observer will lazyload all images
          data-src="https://res.cloudinary.com/overture-web-development/image/upload/q_auto/v1638811768/image-slider/sw/episode-iv_bcpqye.webp"
          alt="Star Wars Episode IV A New Hope">
 ```
-
-[Example Deployed to Firebase](https://image-slider-test-814bd.web.app/)
+[Examples](https://image-slider-test-814bd.web.app/)
