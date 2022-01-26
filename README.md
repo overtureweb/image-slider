@@ -2,7 +2,7 @@
 ## How to Use
 Add the following script tag with the CDN version to your code just above the closing body tag:
 ```
-<script src="https://cdn.jsdelivr.net/gh/overtureweb/image-slider@v1.0.0/dist/overturedev.io.carousel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/overtureweb/image-slider@v1.1.0/dist/overturedev.io.carousel.js"></script>
 ```
 
 Then add the web component to the body of your HTML
