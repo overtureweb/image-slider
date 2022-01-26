@@ -34,13 +34,12 @@ class Slider extends HTMLElement {
     autoPlayIntervalID?: NodeJS.Timer | any;
 
     sliderButtons: NodeListOf<HTMLButtonElement>;
-    stylesheet: CSSStyleSheet;
 
     constructor() {
         super();
         this.attachShadow({mode: "open"});
         this.shadowRoot!.innerHTML = html;
-        this.stylesheet = this.addStyleSheet();
+        this.addStyleSheet();
         this.slidesWrapper = this.shadowRoot!.querySelector(".slider__slides") as HTMLDivElement;
         this.sliderButtons = this.shadowRoot!.querySelectorAll("button");
         try {
@@ -113,30 +112,30 @@ class Slider extends HTMLElement {
         });
     }
 
-    addStyleSheet(): CSSStyleSheet {
+    addStyleSheet(): void {
         const styles: HTMLStyleElement = document.createElement("style");
         styles.textContent = css;
-        this.shadowRoot!.append(styles);
-        return styles.sheet!;
+        this.shadowRoot!.appendChild(styles);
     }
 
     handleUserSettings(): void {
         this.autoplay = this.initAutoPlay(this.getAttribute("step-interval") || undefined, this.getAttribute("autoplay-mode") as AutoPlayModes);
         this.hasAttribute("hide-controls") && this.sliderButtons.forEach(btn => btn.hidden = true);
         this.hasAttribute("lazyload") && this.initImgLazyLoading();
+        const [styleSheet] = this.shadowRoot!.styleSheets as StyleSheetList;
         [...this.attributes].forEach(({name, value}) => {
             const cssRule = (this.mapHtmlAttrsToCss() as { [k: string]: (arg: string) => string })[name]?.(value);
-            cssRule && this.stylesheet.insertRule(cssRule, this.stylesheet.cssRules.length)
+            cssRule && styleSheet.insertRule(cssRule, styleSheet.cssRules.length)
         });
     }
 
     mapHtmlAttrsToCss(): object {
         return {
             "max-width": (value: string) => `:host {--max-width: ${value}}`,
-            "num-slides": (value: string) => `:host {--slide-width: calc(100 / ${+value} * .95%);}`,
-            "num-slides-md": (value: string) => `@media all and (min-width: 768px) {:host {--slide-width: calc(100 / ${+value} * .95%);}}`,
-            "num-slides-lg": (value: string) => `@media all and (min-width: 992px) {:host {--slide-width: calc(100 / ${+value} * .95%);}}`,
-            "num-slides-xl": (value: string) => `@media all and (min-width: 1200px) {:host {--slide-width: calc(100 / ${+value} * .95%);}}`,
+            "num-slides": (value: string) => `:host {--slide-width: calc(100 / ${value} * .95%);}`,
+            "num-slides-md": (value: string) => `@media all and (min-width: 768px) {:host {--slide-width: calc(100 / ${value} * .95%);}}`,
+            "num-slides-lg": (value: string) => `@media all and (min-width: 992px) {:host {--slide-width: calc(100 / ${value} * .95%);}}`,
+            "num-slides-xl": (value: string) => `@media all and (min-width: 1200px) {:host {--slide-width: calc(100 / ${value} * .95%);}}`,
             "transition-speed": (value: string) => `:host {--transition-speed: ${value}ms}`,
             "crawl-speed": (value: string) => `:host([autoplay-mode=crawl]) {--transition-speed: ${value}ms}`,
             "transition-easing": (value: string) => `:host {--easing: ${value}`
